@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Festive Cart</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+
+<body>
+
+
+  <!-- ======================================================
+       HEADER
+       ====================================================== -->
+
+  <header class="top-header">
+
+
+    <!-- LEFT MENU BUTTON -->
+
+    <button
+      class="header-menu-button"
+      onclick="openCategoryMenu()"
+      aria-label="Open product categories"
+    >
+      ☰
+    </button>
+
+
+    <!-- BUSINESS NAME -->
+
+    <div class="brand-name">
+      Festive Cart
+    </div>
+
+
+    <!-- RIGHT MENU BUTTON -->
+
+    <button
+      class="header-menu-button"
+      onclick="openCustomerMenu()"
+      aria-label="Open contact menu"
+    >
+      ⋮
+    </button>
+
+
+  </header>
+
+
+
+  <!-- ======================================================
+       LEFT CATEGORY DRAWER
+       ====================================================== -->
+
+  <div
+    id="category-overlay"
+    class="menu-overlay"
+    onclick="closeCategoryMenu()"
+  ></div>
+
+
+  <aside
+    id="category-menu"
+    class="side-menu left-menu"
+  >
+
+
+    <div class="menu-header">
+
+      <h2>
+        Product Categories
+      </h2>
+
+
+      <button
+        class="menu-close-button"
+        onclick="closeCategoryMenu()"
+        aria-label="Close categories"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <!--
+      Categories from the Festive Cart Products spreadsheet
+      will be inserted here automatically by script.js.
+    -->
+
+    <div
+      id="category-list"
+      class="menu-list"
+    >
+
+      <button
+        class="menu-item active-category"
+        onclick="filterProducts('all')"
+      >
+        All Products
+      </button>
+
+    </div>
+
+
+  </aside>
+
+
+
+  <!-- ======================================================
+       RIGHT CUSTOMER / CONTACT MENU
+       ====================================================== -->
+
+  <div
+    id="customer-overlay"
+    class="menu-overlay"
+    onclick="closeCustomerMenu()"
+  ></div>
+
+
+  <aside
+    id="customer-menu"
+    class="side-menu right-menu"
+  >
+
+
+    <div class="menu-header">
+
+      <h2>
+        Contact Us
+      </h2>
+
+
+      <button
+        class="menu-close-button"
+        onclick="closeCustomerMenu()"
+        aria-label="Close contact menu"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="contact-menu-content">
+
+
+      <div class="contact-item">
+
+        <div class="contact-title">
+          Customer Support
+        </div>
+
+        <a href="tel:+919500417696">
+          +91 95004 17696
+        </a>
+
+      </div>
+
+
+
+      <div class="contact-item">
+
+        <div class="contact-title">
+          WhatsApp
+        </div>
+
+        <button
+          class="contact-link-button"
+          onclick="openBusinessWhatsApp()"
+        >
+          Chat with Festive Cart
+        </button>
+
+      </div>
+
+
+
+      <div class="contact-item">
+
+        <div class="contact-title">
+          Instagram
+        </div>
+
+        <button
+          class="contact-link-button"
+          onclick="openInstagram()"
+        >
+          Visit Instagram
+        </button>
+
+      </div>
+
+
+    </div>
+
+
+  </aside>
+
+
+
+  <!-- ======================================================
+       MAIN PAGE
+       ====================================================== -->
+
+  <main class="page-container">
+
+
+    <!-- INTRODUCTION -->
+
+    <section class="intro-section">
+
+      <h1>
+        Festive Cart
+      </h1>
+
+      <p>
+        Shop festive decorations and décor for your
+        celebrations.
+      </p>
+
+    </section>
+
+
+
+    <!-- ====================================================
+         PRODUCT CATALOGUE
+         ==================================================== -->
+
+    <section class="products-section">
+
+
+      <h2 class="section-title">
+        Our Products
+      </h2>
+
+
+      <!--
+        script.js will show this while it is obtaining the
+        catalogue from Google Sheets.
+      -->
+
+      <div
+        id="products-loading"
+        class="products-message"
+      >
+        Loading products...
+      </div>
+
+
+
+      <!--
+        IMPORTANT:
+        All products from Festive Cart Products will be
+        generated inside this container.
+
+        The old hard-coded dummy product cards have been
+        removed.
+      -->
+
+      <div id="product-list"></div>
+
+
+
+      <!-- SHOWN WHEN CATEGORY HAS NO PRODUCTS -->
+
+      <div
+        id="no-products"
+        class="products-message"
+        style="display:none;"
+      >
+        No products are available in this category.
+      </div>
+
+
+
+      <!-- SHOWN IF PRODUCT CATALOGUE CANNOT LOAD -->
+
+      <div
+        id="products-error"
+        class="products-message"
+        style="display:none;"
+      >
+        Products could not be loaded. Please try again.
+      </div>
+
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- ======================================================
+       CART POPUP / PANEL
+       ====================================================== -->
+
+  <div
+    id="cart-overlay"
+    class="cart-overlay"
+    onclick="closeCart()"
+  ></div>
+
+
+  <section
+    id="cart-popup"
+    class="cart-popup"
+  >
+
+
+    <div class="cart-header">
+
+
+      <h2>
+        Your Cart
+      </h2>
+
+
+      <button
+        class="cart-close-button"
+        onclick="closeCart()"
+        aria-label="Close cart"
+      >
+        ×
+      </button>
+
+
+    </div>
+
+
+
+    <!-- CART ITEMS -->
+
+    <div id="cart-items">
+
+      <p class="empty-cart-message">
+        Your cart is empty.
+      </p>
+
+    </div>
+
+
+
+    <!-- CART TOTAL -->
+
+    <div class="cart-total-row">
+
+      <span>
+        Total
+      </span>
+
+      <strong id="cart-total">
+        ₹0
+      </strong>
+
+    </div>
+
+
+
+    <!-- CHECKOUT BUTTON -->
+
+    <button
+      id="checkout-button"
+      class="checkout-button"
+      onclick="showCheckout()"
+    >
+      Proceed to Checkout
+    </button>
+
+
+  </section>
+
+
+
+  <!-- ======================================================
+       CHECKOUT
+       ====================================================== -->
+
+  <section
+    id="checkout-section"
+    class="checkout-section"
+    style="display:none;"
+  >
+
+
+    <div class="checkout-container">
+
+
+      <div class="checkout-heading-row">
+
+
+        <h2>
+          Checkout
+        </h2>
+
+
+        <button
+          class="checkout-close-button"
+          onclick="closeCheckout()"
+          aria-label="Close checkout"
+        >
+          ×
+        </button>
+
+
+      </div>
+
+
+
+      <p class="checkout-note">
+        Please enter your delivery details carefully.
+      </p>
+
+
+
+      <!-- CUSTOMER NAME -->
+
+      <label for="customer-name">
+        Customer Name
+      </label>
+
+      <input
+        type="text"
+        id="customer-name"
+        placeholder="Enter your name"
+        autocomplete="name"
+      >
+
+
+
+      <!-- MOBILE NUMBER -->
+
+      <label for="customer-mobile">
+        Mobile Number
+      </label>
+
+      <input
+        type="tel"
+        id="customer-mobile"
+        placeholder="Enter 10-digit mobile number"
+        inputmode="numeric"
+        maxlength="10"
+        autocomplete="tel"
+      >
+
+
+
+      <!-- ADDRESS -->
+
+      <label for="customer-address">
+        Delivery Address
+      </label>
+
+      <textarea
+        id="customer-address"
+        placeholder="Enter house / flat number, street and area"
+        rows="4"
+        autocomplete="street-address"
+      ></textarea>
+
+
+
+      <!-- CITY -->
+
+      <label for="customer-city">
+        City
+      </label>
+
+      <input
+        type="text"
+        id="customer-city"
+        placeholder="Enter city"
+        autocomplete="address-level2"
+      >
+
+
+
+      <!-- PINCODE -->
+
+      <label for="customer-pincode">
+        Pincode
+      </label>
+
+      <input
+        type="text"
+        id="customer-pincode"
+        placeholder="Enter 6-digit pincode"
+        inputmode="numeric"
+        maxlength="6"
+        autocomplete="postal-code"
+      >
+
+
+
+      <!-- CHECKOUT ORDER SUMMARY -->
+
+      <div class="checkout-summary">
+
+
+        <h3>
+          Order Summary
+        </h3>
+
+
+        <div id="checkout-items"></div>
+
+
+        <div class="checkout-total-row">
+
+          <span>
+            Total Amount
+          </span>
+
+          <strong id="checkout-total">
+            ₹0
+          </strong>
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- PLACE ORDER -->
+
+      <button
+        id="place-order-button"
+        class="place-order-button"
+        onclick="placeOrder()"
+      >
+        Place Order
+      </button>
+
+
+
+      <p
+        id="order-message"
+        class="order-message"
+      ></p>
+
+
+    </div>
+
+
+  </section>
+
+
+
+  <!-- ======================================================
+       FIXED BOTTOM CART BAR
+       ====================================================== -->
+
+  <div
+    id="cart-bar"
+    class="cart-bar"
+    onclick="openCart()"
+  >
+
+
+    <div class="cart-bar-left">
+
+      <span class="cart-icon">
+        🛒
+      </span>
+
+
+      <span>
+        Cart
+      </span>
+
+
+      <span
+        id="cart-count"
+        class="cart-count"
+      >
+        0
+      </span>
+
+    </div>
+
+
+
+    <div
+      id="cart-bar-total"
+      class="cart-bar-total"
+    >
+      ₹0
+    </div>
+
+
+  </div>
+
+
+
+  <!-- ======================================================
+       JAVASCRIPT
+       ====================================================== -->
+
+  <script src="script.js"></script>
+
+
+</body>
+
+</html>
