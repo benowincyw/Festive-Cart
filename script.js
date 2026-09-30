@@ -523,7 +523,7 @@ function createProductCard(product) {
 
   // ==========================================================
   // PRODUCT ACTION ROW
-  // ADD TO CART +  −  QUANTITY  +
+  // ADD TO CART + − QUANTITY +
   // ==========================================================
 
   const actionRow =
@@ -533,8 +533,6 @@ function createProductCard(product) {
     "product-action-row";
 
 
-  // ADD TO CART BUTTON
-
   const button =
     document.createElement("button");
 
@@ -542,16 +540,12 @@ function createProductCard(product) {
   button.className = "add-button";
 
 
-  // QUANTITY CONTROL BOX
-
   const quantityControls =
     document.createElement("div");
 
   quantityControls.className =
     "product-quantity-controls";
 
-
-  // MINUS
 
   const minus =
     document.createElement("button");
@@ -564,16 +558,12 @@ function createProductCard(product) {
   minus.textContent = "−";
 
 
-  // QUANTITY NUMBER
-
   const quantity =
     document.createElement("span");
 
   quantity.className =
     "product-quantity-value";
 
-
-  // PLUS
 
   const plus =
     document.createElement("button");
@@ -585,10 +575,6 @@ function createProductCard(product) {
 
   plus.textContent = "+";
 
-
-  // ==========================================================
-  // REFRESH PRODUCT QUANTITY DISPLAY
-  // ==========================================================
 
   function refreshProductControls() {
 
@@ -634,10 +620,6 @@ function createProductCard(product) {
     }
   }
 
-
-  // ==========================================================
-  // BUTTON ACTIONS
-  // ==========================================================
 
   if (inStock) {
 
@@ -1134,11 +1116,39 @@ function updateCart() {
       " each";
 
 
+    // ========================================================
+    // PRODUCT SUBTOTAL
+    // Quantity × Unit Price = Product Total
+    // ========================================================
+
+    const itemSubtotal =
+      document.createElement("div");
+
+    itemSubtotal.className =
+      "cart-item-subtotal";
+
+    itemSubtotal.textContent =
+      item.quantity +
+      " × " +
+      formatCurrency(
+        item.price
+      ) +
+      " = " +
+      formatCurrency(
+        item.price *
+        item.quantity
+      );
+
+
     details.appendChild(name);
 
     details.appendChild(number);
 
     details.appendChild(price);
+
+    details.appendChild(
+      itemSubtotal
+    );
 
 
     // ========================================================
