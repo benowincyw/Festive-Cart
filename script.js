@@ -1,6 +1,6 @@
 // ============================================================
 // FESTIVE CART - SCRIPT.JS
-// RELIABLE CHECKOUT VERSION
+// CART PRODUCT IMAGE VERSION
 // ============================================================
 
 const businessWhatsApp =
@@ -373,6 +373,7 @@ function createProductCard(product) {
     image.alt = product.productName;
     image.className = "product-image";
     image.loading = "lazy";
+    image.decoding = "async";
 
     image.onerror = function () {
       image.style.display = "none";
@@ -599,6 +600,9 @@ function addToCart(productNo) {
       price:
         product.offerPrice,
 
+      imageURL:
+        product.imageURL,
+
       quantity: 1
     });
   }
@@ -789,6 +793,59 @@ function updateCart() {
     row.className = "cart-item";
 
 
+    // ========================================================
+    // SMALL PRODUCT IMAGE
+    // ========================================================
+
+    const imageBox =
+      document.createElement("div");
+
+    imageBox.className =
+      "cart-item-image-box";
+
+
+    if (item.imageURL) {
+      const image =
+        document.createElement("img");
+
+      image.src = item.imageURL;
+
+      image.alt =
+        item.productName;
+
+      image.className =
+        "cart-item-image";
+
+      image.loading = "lazy";
+      image.decoding = "async";
+
+      image.onerror = function () {
+        image.style.display = "none";
+
+        imageBox.classList.add(
+          "cart-image-placeholder"
+        );
+
+        imageBox.textContent =
+          "No Image";
+      };
+
+      imageBox.appendChild(image);
+
+    } else {
+      imageBox.classList.add(
+        "cart-image-placeholder"
+      );
+
+      imageBox.textContent =
+        "No Image";
+    }
+
+
+    // ========================================================
+    // PRODUCT DETAILS
+    // ========================================================
+
     const details =
       document.createElement("div");
 
@@ -831,6 +888,10 @@ function updateCart() {
     details.appendChild(number);
     details.appendChild(price);
 
+
+    // ========================================================
+    // QUANTITY CONTROLS
+    // ========================================================
 
     const controls =
       document.createElement("div");
@@ -897,6 +958,8 @@ function updateCart() {
     controls.appendChild(plus);
     controls.appendChild(remove);
 
+
+    row.appendChild(imageBox);
     row.appendChild(details);
     row.appendChild(controls);
 
