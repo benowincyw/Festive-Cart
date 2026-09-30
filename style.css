@@ -19,7 +19,9 @@ html {
 body {
   margin: 0;
   padding: 0 0 85px 0;
+
   font-family: Arial, Helvetica, sans-serif;
+
   background: #f7f7f7;
   color: #222;
 }
@@ -218,7 +220,13 @@ button {
   background: #ffffff;
 }
 
-.product-image-slider {
+
+/*
+   JavaScript adds this class automatically
+   when a product contains more than one image.
+*/
+
+.product-image-container.has-image-slider {
   position: relative;
 
   touch-action: pan-y;
@@ -226,6 +234,7 @@ button {
   user-select: none;
   -webkit-user-select: none;
 }
+
 
 .product-image {
   display: block;
@@ -241,8 +250,10 @@ button {
 
   user-select: none;
   -webkit-user-select: none;
+
   -webkit-user-drag: none;
 }
+
 
 .image-placeholder {
   width: 100%;
@@ -260,18 +271,21 @@ button {
 
 
 /* ============================================================
-   PRODUCT IMAGE SLIDER ARROWS
+   PRODUCT IMAGE SLIDER - LEFT AND RIGHT ARROWS
+
+   IMPORTANT:
+   These names exactly match the current script.js
    ============================================================ */
 
-.product-slider-arrow {
+.product-image-arrow {
   position: absolute;
 
   top: 50%;
 
-  z-index: 20;
+  z-index: 30;
 
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
 
   padding: 0;
 
@@ -284,48 +298,58 @@ button {
   border: none;
   border-radius: 50%;
 
-  background: rgba(0, 0, 0, 0.48);
+  background: rgba(0, 0, 0, 0.55);
   color: #ffffff;
 
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 400;
   line-height: 1;
 
-  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
 
   cursor: pointer;
+
+  opacity: 1;
 
   -webkit-tap-highlight-color: transparent;
 }
 
-.product-slider-prev {
+
+/* LEFT ARROW */
+
+.product-image-arrow-left {
   left: 10px;
 }
 
-.product-slider-next {
+
+/* RIGHT ARROW */
+
+.product-image-arrow-right {
   right: 10px;
 }
 
-.product-slider-arrow:hover {
-  background: rgba(0, 0, 0, 0.65);
+
+.product-image-arrow:hover {
+  background: rgba(0, 0, 0, 0.72);
 }
 
-.product-slider-arrow:active {
-  transform: translateY(-50%) scale(0.94);
+
+.product-image-arrow:active {
+  transform: translateY(-50%) scale(0.93);
 }
 
 
 /* ============================================================
-   PRODUCT IMAGE SLIDER DOTS
+   PRODUCT IMAGE SLIDER - DOTS
    ============================================================ */
 
-.product-slider-dots {
+.product-image-dots {
   position: absolute;
 
   left: 50%;
-  bottom: 10px;
+  bottom: 12px;
 
-  z-index: 21;
+  z-index: 31;
 
   transform: translateX(-50%);
 
@@ -333,27 +357,28 @@ button {
   align-items: center;
   justify-content: center;
 
-  gap: 7px;
+  gap: 8px;
 
-  max-width: calc(100% - 100px);
+  max-width: calc(100% - 110px);
 
-  padding: 6px 9px;
+  padding: 6px 10px;
 
   border-radius: 30px;
 
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.9);
 
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
-.product-slider-dot {
+
+.product-image-dot {
   flex: 0 0 auto;
 
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
 
-  min-width: 9px;
-  min-height: 9px;
+  min-width: 10px;
+  min-height: 10px;
 
   margin: 0;
   padding: 0;
@@ -361,9 +386,9 @@ button {
   border: none;
   border-radius: 50%;
 
-  background: #999999;
+  background: #8d8d8d;
 
-  opacity: 0.85;
+  opacity: 0.9;
 
   cursor: pointer;
 
@@ -375,12 +400,15 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-.product-slider-dot.active {
+
+/* CURRENT IMAGE DOT */
+
+.product-image-dot.active {
   background: #c62828;
 
   opacity: 1;
 
-  transform: scale(1.35);
+  transform: scale(1.4);
 }
 
 
@@ -1414,33 +1442,33 @@ button {
 
 
   /* ==========================================================
-     SMALL MOBILE SLIDER CONTROLS
+     SMALL MOBILE SLIDER
      ========================================================== */
 
-  .product-slider-arrow {
-    width: 36px;
-    height: 36px;
+  .product-image-arrow {
+    width: 38px;
+    height: 38px;
 
-    font-size: 28px;
+    font-size: 29px;
   }
 
-  .product-slider-prev {
+  .product-image-arrow-left {
     left: 7px;
   }
 
-  .product-slider-next {
+  .product-image-arrow-right {
     right: 7px;
   }
 
-  .product-slider-dots {
-    bottom: 7px;
+  .product-image-dots {
+    bottom: 8px;
 
     gap: 6px;
 
     padding: 5px 8px;
   }
 
-  .product-slider-dot {
+  .product-image-dot {
     width: 8px;
     height: 8px;
 
