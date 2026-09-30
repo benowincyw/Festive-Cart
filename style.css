@@ -1,6 +1,6 @@
 /* ============================================================
    FESTIVE CART - COMPLETE STYLE.CSS
-   Mobile-first storefront
+   CART PRODUCT IMAGE VERSION
    ============================================================ */
 
 * {
@@ -30,7 +30,9 @@ button {
 }
 
 
-/* HEADER */
+/* ============================================================
+   HEADER
+   ============================================================ */
 
 .top-header {
   position: sticky;
@@ -77,7 +79,9 @@ button {
 }
 
 
-/* PAGE */
+/* ============================================================
+   PAGE
+   ============================================================ */
 
 .page-container {
   width: 100%;
@@ -88,7 +92,9 @@ button {
 }
 
 
-/* INTRO */
+/* ============================================================
+   INTRO
+   ============================================================ */
 
 .intro-section {
   padding: 10px 4px 18px;
@@ -109,7 +115,9 @@ button {
 }
 
 
-/* PRODUCTS */
+/* ============================================================
+   PRODUCTS
+   ============================================================ */
 
 .products-section {
   width: 100%;
@@ -139,7 +147,9 @@ button {
 }
 
 
-/* PRODUCT CARD */
+/* ============================================================
+   PRODUCT CARD
+   ============================================================ */
 
 .product {
   width: 100%;
@@ -151,7 +161,9 @@ button {
 }
 
 
-/* PRODUCT IMAGE */
+/* ============================================================
+   PRODUCT IMAGE
+   ============================================================ */
 
 .product-image-container {
   width: 100%;
@@ -183,7 +195,9 @@ button {
 }
 
 
-/* PRODUCT INFO */
+/* ============================================================
+   PRODUCT INFO
+   ============================================================ */
 
 .product-info {
   padding: 17px;
@@ -212,7 +226,9 @@ button {
 }
 
 
-/* PRICES */
+/* ============================================================
+   PRICES
+   ============================================================ */
 
 .product-price-area {
   display: flex;
@@ -235,7 +251,9 @@ button {
 }
 
 
-/* STOCK */
+/* ============================================================
+   STOCK
+   ============================================================ */
 
 .stock-status {
   display: inline-block;
@@ -257,7 +275,9 @@ button {
 }
 
 
-/* ADD TO CART */
+/* ============================================================
+   ADD TO CART
+   ============================================================ */
 
 .add-button {
   width: 100%;
@@ -283,7 +303,9 @@ button {
 }
 
 
-/* OVERLAYS */
+/* ============================================================
+   OVERLAYS
+   ============================================================ */
 
 .menu-overlay,
 .cart-overlay {
@@ -306,7 +328,9 @@ button {
 }
 
 
-/* SIDE MENUS */
+/* ============================================================
+   SIDE MENUS
+   ============================================================ */
 
 .side-menu {
   position: fixed;
@@ -340,7 +364,9 @@ button {
 }
 
 
-/* MENU HEADER */
+/* ============================================================
+   MENU HEADER
+   ============================================================ */
 
 .menu-header {
   min-height: 65px;
@@ -369,7 +395,9 @@ button {
 }
 
 
-/* CATEGORY MENU */
+/* ============================================================
+   CATEGORY MENU
+   ============================================================ */
 
 .menu-list {
   padding: 12px;
@@ -398,7 +426,9 @@ button {
 }
 
 
-/* CONTACT MENU */
+/* ============================================================
+   CONTACT MENU
+   ============================================================ */
 
 .contact-menu-content {
   padding: 15px;
@@ -432,7 +462,9 @@ button {
 }
 
 
-/* CART POPUP */
+/* ============================================================
+   CART POPUP
+   ============================================================ */
 
 .cart-popup {
   position: fixed;
@@ -456,7 +488,9 @@ button {
 }
 
 
-/* CART HEADER */
+/* ============================================================
+   CART HEADER
+   ============================================================ */
 
 .cart-header {
   display: flex;
@@ -479,7 +513,9 @@ button {
 }
 
 
-/* EMPTY CART */
+/* ============================================================
+   EMPTY CART
+   ============================================================ */
 
 .empty-cart-message {
   margin: 25px 0;
@@ -488,25 +524,79 @@ button {
 }
 
 
-/* CART ITEMS */
+/* ============================================================
+   CART ITEMS
+   ============================================================ */
 
 .cart-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   padding: 14px 0;
   border-bottom: 1px solid #eeeeee;
 }
 
+
+/* ============================================================
+   CART PRODUCT IMAGE
+   ============================================================ */
+
+.cart-item-image-box {
+  flex: 0 0 70px;
+  width: 70px;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border: 1px solid #eeeeee;
+  border-radius: 9px;
+
+  background: #ffffff;
+}
+
+.cart-item-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  background: #ffffff;
+}
+
+.cart-image-placeholder {
+  padding: 4px;
+
+  background: #f3f3f3;
+  color: #999999;
+
+  font-size: 10px;
+  line-height: 1.2;
+
+  text-align: center;
+}
+
+
+/* ============================================================
+   CART PRODUCT DETAILS
+   ============================================================ */
+
 .cart-item-details {
   flex: 1;
+  min-width: 0;
 }
 
 .cart-item-name {
   margin-bottom: 4px;
   font-size: 15px;
   font-weight: 700;
+  line-height: 1.25;
 }
 
 .cart-item-product-number {
@@ -521,27 +611,37 @@ button {
 }
 
 
-/* CART QUANTITY CONTROLS */
+/* ============================================================
+   CART QUANTITY CONTROLS
+   ============================================================ */
 
 .cart-item-controls {
+  flex: 0 0 auto;
+
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+
   gap: 6px;
-  max-width: 145px;
+
+  max-width: 110px;
 }
 
 .cart-item-controls button {
   min-width: 31px;
   min-height: 31px;
+
+  padding: 3px 7px;
+
   border: 1px solid #dddddd;
   border-radius: 6px;
+
   background: #ffffff;
 }
 
 .cart-item-quantity {
-  min-width: 25px;
+  min-width: 20px;
   text-align: center;
   font-weight: 700;
 }
@@ -554,7 +654,9 @@ button {
 }
 
 
-/* CART TOTAL */
+/* ============================================================
+   CART TOTAL
+   ============================================================ */
 
 .cart-total-row {
   display: flex;
@@ -567,7 +669,9 @@ button {
 }
 
 
-/* CHECKOUT BUTTON */
+/* ============================================================
+   CHECKOUT BUTTON
+   ============================================================ */
 
 .checkout-button {
   width: 100%;
@@ -587,7 +691,9 @@ button {
 }
 
 
-/* CHECKOUT */
+/* ============================================================
+   CHECKOUT
+   ============================================================ */
 
 .checkout-section {
   position: fixed;
@@ -612,7 +718,9 @@ button {
 }
 
 
-/* CHECKOUT HEADER */
+/* ============================================================
+   CHECKOUT HEADER
+   ============================================================ */
 
 .checkout-heading-row {
   display: flex;
@@ -640,7 +748,9 @@ button {
 }
 
 
-/* CHECKOUT FORM */
+/* ============================================================
+   CHECKOUT FORM
+   ============================================================ */
 
 .checkout-container label {
   display: block;
@@ -670,7 +780,9 @@ button {
 }
 
 
-/* CHECKOUT SUMMARY */
+/* ============================================================
+   CHECKOUT SUMMARY
+   ============================================================ */
 
 .checkout-summary {
   margin-top: 25px;
@@ -700,7 +812,9 @@ button {
 }
 
 
-/* PLACE ORDER */
+/* ============================================================
+   PLACE ORDER
+   ============================================================ */
 
 .place-order-button {
   width: 100%;
@@ -728,7 +842,9 @@ button {
 }
 
 
-/* FIXED CART BAR */
+/* ============================================================
+   FIXED CART BAR
+   ============================================================ */
 
 .cart-bar {
   position: fixed;
@@ -781,7 +897,9 @@ button {
 }
 
 
-/* DESKTOP */
+/* ============================================================
+   DESKTOP
+   ============================================================ */
 
 @media (min-width: 481px) {
 
@@ -796,7 +914,9 @@ button {
 }
 
 
-/* SMALL MOBILE */
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
 
 @media (max-width: 360px) {
 
@@ -815,5 +935,30 @@ button {
 
   .offer-price {
     font-size: 22px;
+  }
+
+  .cart-item {
+    gap: 7px;
+  }
+
+  .cart-item-image-box {
+    flex-basis: 58px;
+    width: 58px;
+    height: 58px;
+  }
+
+  .cart-item-name {
+    font-size: 14px;
+  }
+
+  .cart-item-controls {
+    max-width: 98px;
+    gap: 4px;
+  }
+
+  .cart-item-controls button {
+    min-width: 28px;
+    min-height: 29px;
+    padding: 2px 5px;
   }
 }
