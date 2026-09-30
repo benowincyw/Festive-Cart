@@ -3,6 +3,11 @@
    MULTIPLE PRODUCT IMAGE SLIDER VERSION
    ============================================================ */
 
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
 * {
   box-sizing: border-box;
 }
@@ -56,8 +61,7 @@ button {
 
   border-bottom: none;
 
-  box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
 }
 
 .brand-name {
@@ -90,8 +94,7 @@ button {
 }
 
 .header-menu-button:hover {
-  background:
-    rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 
@@ -193,13 +196,12 @@ button {
   border: 1px solid #e5e5e5;
   border-radius: 16px;
 
-  box-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
 }
 
 
 /* ============================================================
-   PRODUCT IMAGE / IMAGE SLIDER
+   PRODUCT IMAGE
    ============================================================ */
 
 .product-image-container {
@@ -214,10 +216,13 @@ button {
   overflow: hidden;
 
   background: #ffffff;
+}
 
-  /* Allows vertical page scrolling while
-     JavaScript handles horizontal image swipe */
+.product-image-slider {
+  position: relative;
+
   touch-action: pan-y;
+
   user-select: none;
   -webkit-user-select: none;
 }
@@ -234,8 +239,9 @@ button {
 
   background: #ffffff;
 
-  -webkit-user-drag: none;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
 }
 
 .image-placeholder {
@@ -254,15 +260,15 @@ button {
 
 
 /* ============================================================
-   IMAGE SLIDER ARROWS
-   Only created when product has 2+ images
+   PRODUCT IMAGE SLIDER ARROWS
    ============================================================ */
 
-.product-image-arrow {
+.product-slider-arrow {
   position: absolute;
 
   top: 50%;
-  z-index: 10;
+
+  z-index: 20;
 
   width: 42px;
   height: 42px;
@@ -278,55 +284,48 @@ button {
   border: none;
   border-radius: 50%;
 
-  background:
-    rgba(0, 0, 0, 0.46);
-
+  background: rgba(0, 0, 0, 0.48);
   color: #ffffff;
 
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 400;
   line-height: 1;
 
-  box-shadow:
-    0 2px 7px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.22);
 
   cursor: pointer;
 
-  -webkit-tap-highlight-color:
-    transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.product-image-arrow-left {
+.product-slider-prev {
   left: 10px;
 }
 
-.product-image-arrow-right {
+.product-slider-next {
   right: 10px;
 }
 
-.product-image-arrow:hover {
-  background:
-    rgba(0, 0, 0, 0.62);
+.product-slider-arrow:hover {
+  background: rgba(0, 0, 0, 0.65);
 }
 
-.product-image-arrow:active {
-  transform:
-    translateY(-50%)
-    scale(0.94);
+.product-slider-arrow:active {
+  transform: translateY(-50%) scale(0.94);
 }
 
 
 /* ============================================================
-   IMAGE SLIDER DOTS
+   PRODUCT IMAGE SLIDER DOTS
    ============================================================ */
 
-.product-image-dots {
+.product-slider-dots {
   position: absolute;
 
   left: 50%;
   bottom: 10px;
 
-  z-index: 11;
+  z-index: 21;
 
   transform: translateX(-50%);
 
@@ -342,14 +341,12 @@ button {
 
   border-radius: 30px;
 
-  background:
-    rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.86);
 
-  box-shadow:
-    0 1px 5px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
 }
 
-.product-image-dot {
+.product-slider-dot {
   flex: 0 0 auto;
 
   width: 9px;
@@ -358,14 +355,15 @@ button {
   min-width: 9px;
   min-height: 9px;
 
+  margin: 0;
   padding: 0;
 
   border: none;
   border-radius: 50%;
 
-  background: #aaaaaa;
+  background: #999999;
 
-  opacity: 0.8;
+  opacity: 0.85;
 
   cursor: pointer;
 
@@ -374,16 +372,15 @@ button {
     background 0.15s ease,
     opacity 0.15s ease;
 
-  -webkit-tap-highlight-color:
-    transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.product-image-dot.active {
+.product-slider-dot.active {
   background: #c62828;
 
   opacity: 1;
 
-  transform: scale(1.3);
+  transform: scale(1.35);
 }
 
 
@@ -487,7 +484,6 @@ button {
 
 /* ============================================================
    PRODUCT ACTION ROW
-   ADD TO CART + - QUANTITY +
    ============================================================ */
 
 .product-action-row {
@@ -515,8 +511,7 @@ button {
   font-weight: 700;
 }
 
-.product-action-row.has-quantity
-.add-button {
+.product-action-row.has-quantity .add-button {
   width: auto;
 
   flex: 1 1 50%;
@@ -622,11 +617,9 @@ button {
 
   opacity: 0;
 
-  background:
-    rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.45);
 
-  transition:
-    opacity 0.25s ease;
+  transition: opacity 0.25s ease;
 }
 
 .menu-overlay.show,
@@ -657,35 +650,29 @@ button {
 
   background: #ffffff;
 
-  box-shadow:
-    0 0 18px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.18);
 
-  transition:
-    transform 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
 .left-menu {
   left: 0;
 
-  transform:
-    translateX(-105%);
+  transform: translateX(-105%);
 }
 
 .left-menu.open {
-  transform:
-    translateX(0);
+  transform: translateX(0);
 }
 
 .right-menu {
   right: 0;
 
-  transform:
-    translateX(105%);
+  transform: translateX(105%);
 }
 
 .right-menu.open {
-  transform:
-    translateX(0);
+  transform: translateX(0);
 }
 
 
@@ -705,8 +692,7 @@ button {
   background: #c62828;
   color: #ffffff;
 
-  border-bottom:
-    1px solid #b71c1c;
+  border-bottom: 1px solid #b71c1c;
 }
 
 .menu-header h2 {
@@ -779,8 +765,7 @@ button {
 .contact-item {
   padding: 15px 5px;
 
-  border-bottom:
-    1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
 }
 
 .contact-title {
@@ -837,22 +822,17 @@ button {
 
   background: #ffffff;
 
-  border-radius:
-    20px 20px 0 0;
+  border-radius: 20px 20px 0 0;
 
-  box-shadow:
-    0 -5px 22px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 -5px 22px rgba(0, 0, 0, 0.18);
 
-  transform:
-    translate(-50%, 105%);
+  transform: translate(-50%, 105%);
 
-  transition:
-    transform 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
 .cart-popup.open {
-  transform:
-    translate(-50%, 0);
+  transform: translate(-50%, 0);
 }
 
 
@@ -912,8 +892,7 @@ button {
 
   padding: 14px 0;
 
-  border-bottom:
-    1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
 }
 
 
@@ -933,9 +912,7 @@ button {
 
   overflow: hidden;
 
-  border:
-    1px solid #eeeeee;
-
+  border: 1px solid #eeeeee;
   border-radius: 9px;
 
   background: #ffffff;
@@ -1038,9 +1015,7 @@ button {
 
   padding: 3px 7px;
 
-  border:
-    1px solid #dddddd;
-
+  border: 1px solid #dddddd;
   border-radius: 6px;
 
   background: #ffffff;
@@ -1078,8 +1053,7 @@ button {
 
   padding-top: 15px;
 
-  border-top:
-    2px solid #eeeeee;
+  border-top: 2px solid #eeeeee;
 
   font-size: 18px;
 }
@@ -1130,8 +1104,7 @@ button {
 
   overflow-y: auto;
 
-  padding:
-    18px 14px 100px;
+  padding: 18px 14px 100px;
 
   background: #f5f5f5;
 }
@@ -1148,8 +1121,7 @@ button {
 
   border-radius: 14px;
 
-  box-shadow:
-    0 3px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
 }
 
 
@@ -1207,9 +1179,7 @@ button {
 
   padding: 12px;
 
-  border:
-    1px solid #cccccc;
-
+  border: 1px solid #cccccc;
   border-radius: 8px;
 
   background: #ffffff;
@@ -1254,8 +1224,7 @@ button {
 
   padding: 8px 0;
 
-  border-bottom:
-    1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
 
   font-size: 14px;
 }
@@ -1326,8 +1295,7 @@ button {
 
   min-height: 62px;
 
-  transform:
-    translateX(-50%);
+  transform: translateX(-50%);
 
   display: flex;
   align-items: center;
@@ -1338,8 +1306,7 @@ button {
   background: #11823b;
   color: #ffffff;
 
-  box-shadow:
-    0 -3px 12px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.16);
 
   cursor: pointer;
 }
@@ -1396,8 +1363,7 @@ button {
   .page-container {
     background: #f7f7f7;
 
-    box-shadow:
-      0 0 18px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -1447,25 +1413,26 @@ button {
   }
 
 
-  /* Smaller slider controls
-     for narrow mobile screens */
+  /* ==========================================================
+     SMALL MOBILE SLIDER CONTROLS
+     ========================================================== */
 
-  .product-image-arrow {
+  .product-slider-arrow {
     width: 36px;
     height: 36px;
 
-    font-size: 29px;
+    font-size: 28px;
   }
 
-  .product-image-arrow-left {
+  .product-slider-prev {
     left: 7px;
   }
 
-  .product-image-arrow-right {
+  .product-slider-next {
     right: 7px;
   }
 
-  .product-image-dots {
+  .product-slider-dots {
     bottom: 7px;
 
     gap: 6px;
@@ -1473,7 +1440,7 @@ button {
     padding: 5px 8px;
   }
 
-  .product-image-dot {
+  .product-slider-dot {
     width: 8px;
     height: 8px;
 
@@ -1482,7 +1449,9 @@ button {
   }
 
 
-  /* Cart */
+  /* ==========================================================
+     SMALL MOBILE CART
+     ========================================================== */
 
   .cart-item {
     gap: 7px;
