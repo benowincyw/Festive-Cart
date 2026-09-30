@@ -357,26 +357,34 @@ button {
 
 /* ============================================================
    PRODUCT ACTION ROW
-   ADD TO CART + QUANTITY
+
+   LEFT:
+   Add to Cart = approximately 50%
+
+   RIGHT:
+   Quantity control = approximately 25%
+
+   Remaining space separates the two controls.
    ============================================================ */
 
 .product-action-row {
   width: 100%;
 
   display: flex;
-  align-items: stretch;
+  align-items: center;
 
   gap: 10px;
+
+  min-height: 46px;
 }
 
 
 /* ============================================================
    ADD TO CART
-   LEFT HALF
    ============================================================ */
 
 .add-button {
-  padding: 13px 15px;
+  padding: 12px 10px;
 
   border: none;
   border-radius: 9px;
@@ -384,21 +392,36 @@ button {
   background: #11823b;
   color: #ffffff;
 
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
+
+  min-height: 46px;
+
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease;
 }
 
+
+/* Product-card Add to Cart only */
+
 .product-add-button {
-  flex: 1 1 50%;
+  flex: 0 0 50%;
 
   width: 50%;
-  min-width: 0;
+  max-width: 50%;
 
-  min-height: 48px;
+  min-height: 46px;
+
+  margin: 0;
 }
 
 .add-button:hover {
   opacity: 0.92;
+}
+
+.add-button:active {
+  opacity: 0.82;
 }
 
 .add-button.disabled,
@@ -413,16 +436,23 @@ button {
 
 
 /* ============================================================
-   PRODUCT QUANTITY SELECTOR
-   RIGHT HALF
+   PRODUCT QUANTITY CONTROL
+
+   IMPORTANT:
+   JavaScript should show this only when quantity > 0.
+
+   Example:
+   [ - ] 1 [ + ]
    ============================================================ */
 
 .product-quantity-controls {
-  flex: 1 1 50%;
+  flex: 0 0 25%;
 
-  width: 50%;
-  min-width: 0;
-  min-height: 48px;
+  width: 25%;
+  max-width: 25%;
+
+  min-width: 105px;
+  height: 46px;
 
   display: flex;
   align-items: center;
@@ -430,17 +460,22 @@ button {
 
   overflow: hidden;
 
-  border: 1px solid #d7d7d7;
+  border: 1px solid #11823b;
   border-radius: 9px;
 
   background: #ffffff;
 }
 
-.product-quantity-button {
-  flex: 0 0 38px;
 
-  width: 38px;
-  height: 46px;
+/* ============================================================
+   GREEN - AND + BUTTONS
+   ============================================================ */
+
+.product-quantity-button {
+  flex: 0 0 34px;
+
+  width: 34px;
+  height: 100%;
 
   padding: 0;
 
@@ -449,32 +484,45 @@ button {
   justify-content: center;
 
   border: none;
+  border-radius: 0;
 
-  background: #f4f4f4;
-  color: #222;
+  background: #11823b;
+  color: #ffffff;
 
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 700;
 
   line-height: 1;
+
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .product-quantity-button:hover {
-  background: #e9e9e9;
+  background: #0d6f32;
 }
 
 .product-quantity-button:active {
-  background: #dddddd;
+  background: #095c29;
 }
+
+
+/* ============================================================
+   PRODUCT QUANTITY NUMBER
+   ============================================================ */
 
 .product-selected-quantity {
   flex: 1;
 
   min-width: 28px;
 
-  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  color: #222;
+  color: #222222;
+  background: #ffffff;
 
   text-align: center;
 
@@ -482,20 +530,25 @@ button {
   font-weight: 700;
 }
 
+
+/* ============================================================
+   DISABLED PRODUCT QUANTITY
+   ============================================================ */
+
 .product-quantity-controls.disabled {
-  background: #f5f5f5;
+  border-color: #bdbdbd;
 
-  border-color: #dddddd;
+  background: #f3f3f3;
 
-  opacity: 0.65;
+  opacity: 0.7;
 }
 
 .product-quantity-controls.disabled
 .product-quantity-button {
   cursor: not-allowed;
 
-  background: #eeeeee;
-  color: #999999;
+  background: #bdbdbd;
+  color: #ffffff;
 }
 
 
@@ -825,7 +878,9 @@ button {
 
 /* ============================================================
    CART QUANTITY CONTROLS
-   SECOND CHANCE TO CHANGE QUANTITY
+
+   These remain available as the customer's
+   second chance to change quantity.
    ============================================================ */
 
 .cart-item-controls {
@@ -1193,7 +1248,6 @@ button {
 
     box-shadow: 0 0 18px rgba(0, 0, 0, 0.05);
   }
-
 }
 
 
@@ -1221,32 +1275,50 @@ button {
   }
 
 
-  /* Keep both controls on one row
-     even on smaller phones */
+  /* ----------------------------------------------------------
+     KEEP PRODUCT CONTROLS ON ONE ROW
+     ---------------------------------------------------------- */
 
   .product-action-row {
     gap: 7px;
   }
 
-  .add-button {
-    padding-left: 8px;
-    padding-right: 8px;
+
+  .product-add-button {
+    flex-basis: 50%;
+
+    width: 50%;
+    max-width: 50%;
+
+    padding-left: 6px;
+    padding-right: 6px;
 
     font-size: 14px;
   }
 
-  .product-quantity-button {
-    flex-basis: 34px;
 
-    width: 34px;
+  .product-quantity-controls {
+    flex-basis: 25%;
 
-    font-size: 20px;
+    width: 25%;
+    max-width: 25%;
+
+    min-width: 98px;
   }
 
+
+  .product-quantity-button {
+    flex-basis: 31px;
+
+    width: 31px;
+
+    font-size: 19px;
+  }
+
+
   .product-selected-quantity {
-    min-width: 22px;
+    min-width: 24px;
 
     font-size: 15px;
   }
-
 }
