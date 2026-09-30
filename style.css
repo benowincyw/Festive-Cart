@@ -1,6 +1,6 @@
 /* ============================================================
    FESTIVE CART - COMPLETE STYLE.CSS
-   CART PRODUCT IMAGE VERSION
+   CART PRODUCT IMAGE + CHRISTMAS BACKGROUND VERSION
    ============================================================ */
 
 * {
@@ -15,7 +15,21 @@ body {
   margin: 0;
   padding: 0 0 85px 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f7f7f7;
+
+  background-color: #f7f3ed;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.82),
+      rgba(255, 255, 255, 0.82)
+    ),
+    url("christmas-background.jpg");
+
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
   color: #222;
 }
 
@@ -89,6 +103,9 @@ button {
   min-height: 100vh;
   margin: 0 auto;
   padding: 20px 14px 30px;
+
+  /* Keep the Christmas image visible behind the page */
+  background: transparent;
 }
 
 
@@ -109,7 +126,7 @@ button {
 .intro-section p {
   max-width: 390px;
   margin: 0 auto;
-  color: #666;
+  color: #555555;
   font-size: 15px;
   line-height: 1.55;
 }
@@ -133,7 +150,7 @@ button {
   margin: 15px 0;
   padding: 18px;
   border-radius: 10px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.94);
   color: #666;
   text-align: center;
   border: 1px solid #e7e7e7;
@@ -154,10 +171,10 @@ button {
 .product {
   width: 100%;
   overflow: hidden;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.97);
   border: 1px solid #e5e5e5;
   border-radius: 16px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.10);
 }
 
 
@@ -669,6 +686,14 @@ button {
   font-size: 13px;
 }
 
+/* Quantity × price subtotal added by current script.js */
+.cart-item-subtotal {
+  margin-top: 4px;
+  color: #222222;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 
 /* ============================================================
    CART QUANTITY CONTROLS
@@ -962,12 +987,29 @@ button {
 
 @media (min-width: 481px) {
 
+  /*
+     Keep the same Christmas background on larger screens.
+     Do not replace it with the previous gray background.
+  */
+
   body {
-    background: #eeeeee;
+    background-color: #f7f3ed;
+
+    background-image:
+      linear-gradient(
+        rgba(255, 255, 255, 0.82),
+        rgba(255, 255, 255, 0.82)
+      ),
+      url("christmas-background.jpg");
+
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 
   .page-container {
-    background: #f7f7f7;
+    background: transparent;
     box-shadow: 0 0 18px rgba(0, 0, 0, 0.05);
   }
 }
