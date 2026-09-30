@@ -3,11 +3,6 @@
    Mobile-first storefront
    ============================================================ */
 
-
-/* ============================================================
-   GLOBAL
-   ============================================================ */
-
 * {
   box-sizing: border-box;
 }
@@ -19,9 +14,7 @@ html {
 body {
   margin: 0;
   padding: 0 0 85px 0;
-
   font-family: Arial, Helvetica, sans-serif;
-
   background: #f7f7f7;
   color: #222;
 }
@@ -37,59 +30,43 @@ button {
 }
 
 
-/* ============================================================
-   RED FESTIVE CART HEADER
-   ============================================================ */
+/* HEADER */
 
 .top-header {
   position: sticky;
   top: 0;
   z-index: 500;
-
   width: 100%;
   max-width: 480px;
   height: 62px;
-
   margin: 0 auto;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 0 12px;
-
   background: #c62828;
   color: #ffffff;
-
   border-bottom: none;
-
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
 }
 
 .brand-name {
   color: #ffffff;
-
   font-size: 21px;
   font-weight: 700;
-
   text-align: center;
 }
 
 .header-menu-button {
   width: 42px;
   height: 42px;
-
   padding: 0;
-
   border: none;
   border-radius: 8px;
-
   background: transparent;
   color: #ffffff;
-
   font-size: 27px;
   line-height: 42px;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,53 +77,39 @@ button {
 }
 
 
-/* ============================================================
-   PAGE
-   ============================================================ */
+/* PAGE */
 
 .page-container {
   width: 100%;
   max-width: 480px;
-
   min-height: 100vh;
-
   margin: 0 auto;
-
   padding: 20px 14px 30px;
 }
 
 
-/* ============================================================
-   INTRODUCTION
-   ============================================================ */
+/* INTRO */
 
 .intro-section {
   padding: 10px 4px 18px;
-
   text-align: center;
 }
 
 .intro-section h1 {
   margin: 4px 0 8px;
-
   font-size: 27px;
 }
 
 .intro-section p {
   max-width: 390px;
-
   margin: 0 auto;
-
   color: #666;
-
   font-size: 15px;
   line-height: 1.55;
 }
 
 
-/* ============================================================
-   PRODUCTS SECTION
-   ============================================================ */
+/* PRODUCTS */
 
 .products-section {
   width: 100%;
@@ -154,114 +117,73 @@ button {
 
 .section-title {
   margin: 10px 0 15px;
-
   font-size: 21px;
 }
 
-
-/* ============================================================
-   PRODUCT MESSAGES
-   ============================================================ */
-
 .products-message {
   width: 100%;
-
   margin: 15px 0;
-
   padding: 18px;
-
   border-radius: 10px;
-
   background: #ffffff;
-
   color: #666;
-
   text-align: center;
-
   border: 1px solid #e7e7e7;
 }
 
-
-/* ============================================================
-   PRODUCT LIST
-   ============================================================ */
-
 #product-list {
   width: 100%;
-
   display: flex;
   flex-direction: column;
-
   gap: 18px;
 }
 
 
-/* ============================================================
-   PRODUCT CARD
-   ============================================================ */
+/* PRODUCT CARD */
 
 .product {
   width: 100%;
-
   overflow: hidden;
-
   background: #ffffff;
-
   border: 1px solid #e5e5e5;
   border-radius: 16px;
-
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
 }
 
 
-/* ============================================================
-   PRODUCT IMAGE
-   ============================================================ */
+/* PRODUCT IMAGE */
 
 .product-image-container {
   width: 100%;
-
   background: #ffffff;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   overflow: hidden;
 }
 
 .product-image {
   display: block;
-
   width: 100%;
   height: auto;
-
   max-height: 500px;
-
   object-fit: contain;
-
   background: #ffffff;
 }
 
 .image-placeholder {
   width: 100%;
   min-height: 220px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: #eeeeee;
-
   color: #777;
-
   font-size: 15px;
 }
 
 
-/* ============================================================
-   PRODUCT INFORMATION
-   ============================================================ */
+/* PRODUCT INFO */
 
 .product-info {
   padding: 17px;
@@ -269,77 +191,57 @@ button {
 
 .product-number {
   margin-bottom: 6px;
-
   color: #888;
-
   font-size: 12px;
   font-weight: 600;
-
   letter-spacing: 0.4px;
 }
 
 .product-name {
   margin: 0 0 8px;
-
   color: #222;
-
   font-size: 20px;
   line-height: 1.3;
 }
 
 .product-description {
   margin: 0 0 14px;
-
   color: #666;
-
   font-size: 14px;
   line-height: 1.5;
 }
 
 
-/* ============================================================
-   PRODUCT PRICES
-   ============================================================ */
+/* PRICES */
 
 .product-price-area {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 10px;
-
   margin: 8px 0 10px;
 }
 
 .actual-price {
   color: #888;
-
   font-size: 16px;
-
   text-decoration: line-through;
 }
 
 .offer-price {
   color: #d32f2f;
-
   font-size: 24px;
   font-weight: 700;
 }
 
 
-/* ============================================================
-   STOCK STATUS
-   ============================================================ */
+/* STOCK */
 
 .stock-status {
   display: inline-block;
-
   margin: 2px 0 14px;
-
   padding: 6px 10px;
-
   border-radius: 20px;
-
   font-size: 13px;
   font-weight: 700;
 }
@@ -355,224 +257,45 @@ button {
 }
 
 
-/* ============================================================
-   PRODUCT ACTION ROW
-
-   LEFT:
-   Add to Cart = approximately 50%
-
-   RIGHT:
-   Quantity control = approximately 25%
-
-   Remaining space separates the two controls.
-   ============================================================ */
-
-.product-action-row {
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-
-  gap: 10px;
-
-  min-height: 46px;
-}
-
-
-/* ============================================================
-   ADD TO CART
-   ============================================================ */
+/* ADD TO CART */
 
 .add-button {
-  padding: 12px 10px;
-
+  width: 100%;
+  padding: 13px 15px;
   border: none;
   border-radius: 9px;
-
   background: #11823b;
   color: #ffffff;
-
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
-
-  min-height: 46px;
-
-  transition:
-    opacity 0.15s ease,
-    background 0.15s ease;
-}
-
-
-/* Product-card Add to Cart only */
-
-.product-add-button {
-  flex: 0 0 50%;
-
-  width: 50%;
-  max-width: 50%;
-
-  min-height: 46px;
-
-  margin: 0;
 }
 
 .add-button:hover {
   opacity: 0.92;
 }
 
-.add-button:active {
-  opacity: 0.82;
-}
-
 .add-button.disabled,
 .add-button:disabled {
   cursor: not-allowed;
-
   background: #bdbdbd;
   color: #ffffff;
-
   opacity: 1;
 }
 
 
-/* ============================================================
-   PRODUCT QUANTITY CONTROL
-
-   IMPORTANT:
-   JavaScript should show this only when quantity > 0.
-
-   Example:
-   [ - ] 1 [ + ]
-   ============================================================ */
-
-.product-quantity-controls {
-  flex: 0 0 25%;
-
-  width: 25%;
-  max-width: 25%;
-
-  min-width: 105px;
-  height: 46px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  overflow: hidden;
-
-  border: 1px solid #11823b;
-  border-radius: 9px;
-
-  background: #ffffff;
-}
-
-
-/* ============================================================
-   GREEN - AND + BUTTONS
-   ============================================================ */
-
-.product-quantity-button {
-  flex: 0 0 34px;
-
-  width: 34px;
-  height: 100%;
-
-  padding: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-  border-radius: 0;
-
-  background: #11823b;
-  color: #ffffff;
-
-  font-size: 21px;
-  font-weight: 700;
-
-  line-height: 1;
-
-  transition:
-    background 0.15s ease,
-    opacity 0.15s ease;
-}
-
-.product-quantity-button:hover {
-  background: #0d6f32;
-}
-
-.product-quantity-button:active {
-  background: #095c29;
-}
-
-
-/* ============================================================
-   PRODUCT QUANTITY NUMBER
-   ============================================================ */
-
-.product-selected-quantity {
-  flex: 1;
-
-  min-width: 28px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: #222222;
-  background: #ffffff;
-
-  text-align: center;
-
-  font-size: 16px;
-  font-weight: 700;
-}
-
-
-/* ============================================================
-   DISABLED PRODUCT QUANTITY
-   ============================================================ */
-
-.product-quantity-controls.disabled {
-  border-color: #bdbdbd;
-
-  background: #f3f3f3;
-
-  opacity: 0.7;
-}
-
-.product-quantity-controls.disabled
-.product-quantity-button {
-  cursor: not-allowed;
-
-  background: #bdbdbd;
-  color: #ffffff;
-}
-
-
-/* ============================================================
-   MENU AND CART OVERLAYS
-   ============================================================ */
+/* OVERLAYS */
 
 .menu-overlay,
 .cart-overlay {
   position: fixed;
-
   top: 0;
   left: 0;
-
   width: 100%;
   height: 100%;
-
   z-index: 800;
-
   visibility: hidden;
   opacity: 0;
-
   background: rgba(0, 0, 0, 0.45);
-
   transition: opacity 0.25s ease;
 }
 
@@ -583,34 +306,23 @@ button {
 }
 
 
-/* ============================================================
-   SIDE MENUS
-   ============================================================ */
+/* SIDE MENUS */
 
 .side-menu {
   position: fixed;
-
   top: 0;
-
   width: min(82%, 340px);
   height: 100%;
-
   z-index: 900;
-
   overflow-y: auto;
-
   padding: 0 0 30px;
-
   background: #ffffff;
-
   box-shadow: 0 0 18px rgba(0, 0, 0, 0.18);
-
   transition: transform 0.25s ease;
 }
 
 .left-menu {
   left: 0;
-
   transform: translateX(-105%);
 }
 
@@ -620,7 +332,6 @@ button {
 
 .right-menu {
   right: 0;
-
   transform: translateX(105%);
 }
 
@@ -629,48 +340,36 @@ button {
 }
 
 
-/* ============================================================
-   SIDE MENU HEADER
-   ============================================================ */
+/* MENU HEADER */
 
 .menu-header {
   min-height: 65px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 14px 16px;
-
   background: #c62828;
   color: #ffffff;
-
   border-bottom: 1px solid #b71c1c;
 }
 
 .menu-header h2 {
   margin: 0;
-
   font-size: 20px;
 }
 
 .menu-close-button {
   width: 38px;
   height: 38px;
-
   border: none;
-
   background: transparent;
   color: #ffffff;
-
   font-size: 30px;
   line-height: 1;
 }
 
 
-/* ============================================================
-   CATEGORY MENU
-   ============================================================ */
+/* CATEGORY MENU */
 
 .menu-list {
   padding: 12px;
@@ -678,20 +377,13 @@ button {
 
 .menu-item {
   width: 100%;
-
   margin-bottom: 5px;
-
   padding: 13px 12px;
-
   border: none;
   border-radius: 8px;
-
   background: transparent;
-
   color: #333;
-
   text-align: left;
-
   font-size: 15px;
 }
 
@@ -701,16 +393,12 @@ button {
 
 .menu-item.active-category {
   background: #ffebee;
-
   color: #b71c1c;
-
   font-weight: 700;
 }
 
 
-/* ============================================================
-   CONTACT MENU
-   ============================================================ */
+/* CONTACT MENU */
 
 .contact-menu-content {
   padding: 15px;
@@ -718,71 +406,48 @@ button {
 
 .contact-item {
   padding: 15px 5px;
-
   border-bottom: 1px solid #eeeeee;
 }
 
 .contact-title {
   margin-bottom: 8px;
-
   color: #666;
-
   font-size: 13px;
   font-weight: 600;
 }
 
 .contact-item a {
   color: #1469d8;
-
   font-size: 15px;
-
   text-decoration: none;
 }
 
 .contact-link-button {
   padding: 0;
-
   border: none;
-
   background: transparent;
-
   color: #1469d8;
-
   font-size: 15px;
-
   text-align: left;
 }
 
 
-/* ============================================================
-   CART POPUP
-   ============================================================ */
+/* CART POPUP */
 
 .cart-popup {
   position: fixed;
-
   left: 50%;
   bottom: 0;
-
   z-index: 950;
-
   width: 100%;
   max-width: 480px;
-
   max-height: 80vh;
-
   overflow-y: auto;
-
   padding: 18px 16px 24px;
-
   background: #ffffff;
-
   border-radius: 20px 20px 0 0;
-
   box-shadow: 0 -5px 22px rgba(0, 0, 0, 0.18);
-
   transform: translate(-50%, 105%);
-
   transition: transform 0.25s ease;
 }
 
@@ -791,62 +456,46 @@ button {
 }
 
 
-/* ============================================================
-   CART HEADER
-   ============================================================ */
+/* CART HEADER */
 
 .cart-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-bottom: 16px;
 }
 
 .cart-header h2 {
   margin: 0;
-
   font-size: 22px;
 }
 
 .cart-close-button {
   width: 38px;
   height: 38px;
-
   border: none;
-
   background: transparent;
-
   font-size: 30px;
 }
 
 
-/* ============================================================
-   EMPTY CART
-   ============================================================ */
+/* EMPTY CART */
 
 .empty-cart-message {
   margin: 25px 0;
-
   color: #777;
-
   text-align: center;
 }
 
 
-/* ============================================================
-   CART ITEMS
-   ============================================================ */
+/* CART ITEMS */
 
 .cart-item {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-
   gap: 12px;
-
   padding: 14px 0;
-
   border-bottom: 1px solid #eeeeee;
 }
 
@@ -856,161 +505,114 @@ button {
 
 .cart-item-name {
   margin-bottom: 4px;
-
   font-size: 15px;
   font-weight: 700;
 }
 
 .cart-item-product-number {
   margin-bottom: 5px;
-
   color: #888;
-
   font-size: 11px;
 }
 
 .cart-item-price {
   color: #555;
-
   font-size: 13px;
 }
 
 
-/* ============================================================
-   CART QUANTITY CONTROLS
-
-   These remain available as the customer's
-   second chance to change quantity.
-   ============================================================ */
+/* CART QUANTITY CONTROLS */
 
 .cart-item-controls {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
-
   gap: 6px;
-
   max-width: 145px;
 }
 
 .cart-item-controls button {
   min-width: 31px;
   min-height: 31px;
-
   border: 1px solid #dddddd;
   border-radius: 6px;
-
   background: #ffffff;
 }
 
 .cart-item-quantity {
   min-width: 25px;
-
   text-align: center;
-
   font-weight: 700;
 }
 
 .remove-cart-item {
   width: 100%;
-
   margin-top: 3px;
-
   color: #c62828;
-
   font-size: 12px;
 }
 
 
-/* ============================================================
-   CART TOTAL
-   ============================================================ */
+/* CART TOTAL */
 
 .cart-total-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   margin-top: 18px;
-
   padding-top: 15px;
-
   border-top: 2px solid #eeeeee;
-
   font-size: 18px;
 }
 
 
-/* ============================================================
-   CHECKOUT BUTTON
-   ============================================================ */
+/* CHECKOUT BUTTON */
 
 .checkout-button {
   width: 100%;
-
   margin-top: 18px;
-
   padding: 14px;
-
   border: none;
   border-radius: 9px;
-
   background: #11823b;
   color: #ffffff;
-
   font-size: 16px;
   font-weight: 700;
 }
 
 .checkout-button:disabled {
   cursor: not-allowed;
-
   background: #bdbdbd;
 }
 
 
-/* ============================================================
-   CHECKOUT
-   ============================================================ */
+/* CHECKOUT */
 
 .checkout-section {
   position: fixed;
-
   top: 0;
   left: 0;
-
   z-index: 1100;
-
   width: 100%;
   height: 100%;
-
   overflow-y: auto;
-
   padding: 18px 14px 100px;
-
   background: #f5f5f5;
 }
 
 .checkout-container {
   width: 100%;
   max-width: 480px;
-
   margin: 0 auto;
-
   padding: 20px;
-
   background: #ffffff;
-
   border-radius: 14px;
-
   box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
 }
 
 
-/* ============================================================
-   CHECKOUT HEADER
-   ============================================================ */
+/* CHECKOUT HEADER */
 
 .checkout-heading-row {
   display: flex;
@@ -1025,33 +627,24 @@ button {
 .checkout-close-button {
   width: 38px;
   height: 38px;
-
   border: none;
-
   background: transparent;
-
   font-size: 29px;
 }
 
 .checkout-note {
   margin: 10px 0 22px;
-
   color: #666;
-
   font-size: 14px;
   line-height: 1.5;
 }
 
 
-/* ============================================================
-   CHECKOUT FORM
-   ============================================================ */
+/* CHECKOUT FORM */
 
 .checkout-container label {
   display: block;
-
   margin: 15px 0 7px;
-
   font-size: 14px;
   font-weight: 700;
 }
@@ -1059,16 +652,11 @@ button {
 .checkout-container input,
 .checkout-container textarea {
   width: 100%;
-
   padding: 12px;
-
   border: 1px solid #cccccc;
   border-radius: 8px;
-
   background: #ffffff;
-
   color: #222;
-
   outline: none;
 }
 
@@ -1082,17 +670,12 @@ button {
 }
 
 
-/* ============================================================
-   CHECKOUT SUMMARY
-   ============================================================ */
+/* CHECKOUT SUMMARY */
 
 .checkout-summary {
   margin-top: 25px;
-
   padding: 16px;
-
   border-radius: 10px;
-
   background: #f7f7f7;
 }
 
@@ -1103,103 +686,73 @@ button {
 .checkout-summary-item {
   display: flex;
   justify-content: space-between;
-
   gap: 10px;
-
   padding: 8px 0;
-
   border-bottom: 1px solid #e5e5e5;
-
   font-size: 14px;
 }
 
 .checkout-total-row {
   display: flex;
   justify-content: space-between;
-
   margin-top: 15px;
-
   font-size: 17px;
 }
 
 
-/* ============================================================
-   PLACE ORDER BUTTON
-   ============================================================ */
+/* PLACE ORDER */
 
 .place-order-button {
   width: 100%;
-
   margin-top: 20px;
-
   padding: 15px;
-
   border: none;
   border-radius: 9px;
-
   background: #11823b;
   color: #ffffff;
-
   font-size: 17px;
   font-weight: 700;
 }
 
 .place-order-button:disabled {
   cursor: not-allowed;
-
   background: #9e9e9e;
 }
 
 .order-message {
   margin: 15px 0 0;
-
   color: #555;
-
   font-size: 14px;
   line-height: 1.5;
-
   text-align: center;
 }
 
 
-/* ============================================================
-   FIXED GREEN CART BAR
-   ============================================================ */
+/* FIXED CART BAR */
 
 .cart-bar {
   position: fixed;
-
   left: 50%;
   bottom: 0;
-
   z-index: 700;
-
   width: 100%;
   max-width: 480px;
   min-height: 62px;
-
   transform: translateX(-50%);
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 10px 18px;
-
   background: #11823b;
   color: #ffffff;
-
   box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.16);
-
   cursor: pointer;
 }
 
 .cart-bar-left {
   display: flex;
   align-items: center;
-
   gap: 8px;
-
   font-size: 16px;
   font-weight: 700;
 }
@@ -1211,18 +764,13 @@ button {
 .cart-count {
   min-width: 24px;
   height: 24px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   padding: 0 6px;
-
   border-radius: 50px;
-
   background: #ffffff;
   color: #11823b;
-
   font-size: 12px;
   font-weight: 700;
 }
@@ -1233,9 +781,7 @@ button {
 }
 
 
-/* ============================================================
-   DESKTOP
-   ============================================================ */
+/* DESKTOP */
 
 @media (min-width: 481px) {
 
@@ -1245,15 +791,12 @@ button {
 
   .page-container {
     background: #f7f7f7;
-
     box-shadow: 0 0 18px rgba(0, 0, 0, 0.05);
   }
 }
 
 
-/* ============================================================
-   SMALL MOBILE
-   ============================================================ */
+/* SMALL MOBILE */
 
 @media (max-width: 360px) {
 
@@ -1272,53 +815,5 @@ button {
 
   .offer-price {
     font-size: 22px;
-  }
-
-
-  /* ----------------------------------------------------------
-     KEEP PRODUCT CONTROLS ON ONE ROW
-     ---------------------------------------------------------- */
-
-  .product-action-row {
-    gap: 7px;
-  }
-
-
-  .product-add-button {
-    flex-basis: 50%;
-
-    width: 50%;
-    max-width: 50%;
-
-    padding-left: 6px;
-    padding-right: 6px;
-
-    font-size: 14px;
-  }
-
-
-  .product-quantity-controls {
-    flex-basis: 25%;
-
-    width: 25%;
-    max-width: 25%;
-
-    min-width: 98px;
-  }
-
-
-  .product-quantity-button {
-    flex-basis: 31px;
-
-    width: 31px;
-
-    font-size: 19px;
-  }
-
-
-  .product-selected-quantity {
-    min-width: 24px;
-
-    font-size: 15px;
   }
 }
