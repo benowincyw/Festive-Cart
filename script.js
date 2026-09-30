@@ -1,12 +1,21 @@
 // ============================================================
 // FESTIVE CART - SCRIPT.JS
-// AUTOMATIC CATEGORIES + FAST IMAGE LOADING
+// AUTOMATIC CATEGORIES
+// OPTIMIZED IMAGE LOADING
+// PRODUCT QUANTITY SELECTOR
 // SAME-TAB ORDER CONFIRMATION
 // ============================================================
 
-const businessWhatsApp = "919500417696";
 
-const customerSupportNumber = "9500417696";
+// ============================================================
+// BUSINESS SETTINGS
+// ============================================================
+
+const businessWhatsApp =
+  "919500417696";
+
+const customerSupportNumber =
+  "9500417696";
 
 const instagramURL = "";
 
@@ -31,6 +40,18 @@ let catalogueLoaded = false;
 let orderSubmissionInProgress = false;
 
 
+// Stores the quantity currently selected
+// beside each product card.
+//
+// Example:
+// {
+//   "WR001": 2,
+//   "TREE001": 1
+// }
+
+let productSelectedQuantities = {};
+
+
 // ============================================================
 // START
 // ============================================================
@@ -38,7 +59,9 @@ let orderSubmissionInProgress = false;
 document.addEventListener(
   "DOMContentLoaded",
   function () {
+
     updateCart();
+
     loadProducts();
   }
 );
@@ -67,17 +90,23 @@ async function loadProducts() {
 
 
   if (loading) {
-    loading.style.display = "block";
+
+    loading.style.display =
+      "block";
   }
 
 
   if (errorBox) {
-    errorBox.style.display = "none";
+
+    errorBox.style.display =
+      "none";
   }
 
 
   if (noProducts) {
-    noProducts.style.display = "none";
+
+    noProducts.style.display =
+      "none";
   }
 
 
@@ -94,11 +123,7 @@ async function loadProducts() {
 
 
     // --------------------------------------------------------
-    // CATEGORY LIST
-    //
-    // Code.gs supplies all spreadsheet tab names separately.
-    // Therefore even an empty product sheet can appear
-    // as a category.
+    // AUTOMATIC CATEGORIES
     // --------------------------------------------------------
 
     if (
@@ -114,16 +139,36 @@ async function loadProducts() {
 
     } else {
 
-      // Fallback for compatibility
       categories =
         getCategoriesFromProducts();
     }
+
+
+    // Make sure every product has
+    // a default selected quantity of 1.
+
+    products.forEach(
+      function (product) {
+
+        if (
+          !productSelectedQuantities[
+            product.productNo
+          ]
+        ) {
+
+          productSelectedQuantities[
+            product.productNo
+          ] = 1;
+        }
+      }
+    );
 
 
     catalogueLoaded = true;
 
 
     if (loading) {
+
       loading.style.display =
         "none";
     }
@@ -142,12 +187,14 @@ async function loadProducts() {
 
 
     if (loading) {
+
       loading.style.display =
         "none";
     }
 
 
     if (errorBox) {
+
       errorBox.style.display =
         "block";
     }
@@ -156,18 +203,21 @@ async function loadProducts() {
 
 
 // ============================================================
-// FETCH PRODUCT CATALOGUE
+// FETCH LATEST CATALOGUE
 // ============================================================
 
 async function fetchLatestCatalogue() {
 
   const response =
     await fetch(
+
       googleScriptURL +
       "?action=products&t=" +
       Date.now(),
+
       {
         method: "GET",
+
         cache: "no-store"
       }
     );
@@ -194,8 +244,12 @@ async function fetchLatestCatalogue() {
   ) {
 
     throw new Error(
-      data && data.error
+
+      data &&
+      data.error
+
         ? data.error
+
         : "Unable to load products."
     );
   }
@@ -212,11 +266,13 @@ async function fetchLatestCatalogue() {
 function normalizeProducts(list) {
 
   if (!Array.isArray(list)) {
+
     return [];
   }
 
 
   return list.map(
+
     function (p) {
 
       return {
@@ -226,6 +282,7 @@ function normalizeProducts(list) {
             p.category || ""
           ).trim(),
 
+
         productNo:
           String(
             p.productNo || ""
@@ -233,33 +290,41 @@ function normalizeProducts(list) {
             .trim()
             .toUpperCase(),
 
+
         productName:
           String(
             p.productName || ""
           ).trim(),
+
 
         description:
           String(
             p.description || ""
           ).trim(),
 
+
         actualPrice:
           Number(
             p.actualPrice
           ) || 0,
+
 
         offerPrice:
           Number(
             p.offerPrice
           ) || 0,
 
+
         availableQty:
           Math.max(
+
             0,
+
             Number(
               p.availableQty
             ) || 0
           ),
+
 
         stockStatus:
           String(
@@ -267,6 +332,7 @@ function normalizeProducts(list) {
           )
             .trim()
             .toUpperCase(),
+
 
         imageURL:
           String(
@@ -288,6 +354,7 @@ function normalizeCategories(list) {
 
 
   list.forEach(
+
     function (category) {
 
       const name =
@@ -321,6 +388,7 @@ function getCategoriesFromProducts() {
 
 
   products.forEach(
+
     function (product) {
 
       if (
@@ -355,15 +423,17 @@ function createCategoryMenu() {
 
 
   if (!categoryList) {
+
     return;
   }
 
 
-  categoryList.innerHTML = "";
+  categoryList.innerHTML =
+    "";
 
 
   // ----------------------------------------------------------
-  // ALL PRODUCTS
+  // ALL PRODUCTS BUTTON
   // ----------------------------------------------------------
 
   const allButton =
@@ -375,8 +445,10 @@ function createCategoryMenu() {
   allButton.type =
     "button";
 
+
   allButton.className =
     "menu-item";
+
 
   allButton.textContent =
     "All Products";
@@ -397,10 +469,11 @@ function createCategoryMenu() {
 
 
   // ----------------------------------------------------------
-  // AUTOMATIC CATEGORIES
+  // SHEET CATEGORIES
   // ----------------------------------------------------------
 
   categories.forEach(
+
     function (category) {
 
       const button =
@@ -412,8 +485,10 @@ function createCategoryMenu() {
       button.type =
         "button";
 
+
       button.className =
         "menu-item";
+
 
       button.textContent =
         category;
@@ -458,7 +533,7 @@ function filterProducts(category) {
 
 
 // ============================================================
-// ACTIVE CATEGORY
+// ACTIVE CATEGORY BUTTON
 // ============================================================
 
 function updateActiveCategoryButton() {
@@ -470,6 +545,7 @@ function updateActiveCategoryButton() {
 
 
   if (!categoryList) {
+
     return;
   }
 
@@ -479,6 +555,7 @@ function updateActiveCategoryButton() {
       ".menu-item"
     )
     .forEach(
+
       function (button) {
 
         button.classList.remove(
@@ -489,7 +566,10 @@ function updateActiveCategoryButton() {
         if (
           currentCategory ===
             "all" &&
-          button.textContent.trim() ===
+
+          button
+            .textContent
+            .trim() ===
             "All Products"
         ) {
 
@@ -502,7 +582,10 @@ function updateActiveCategoryButton() {
         if (
           currentCategory !==
             "all" &&
-          button.textContent.trim() ===
+
+          button
+            .textContent
+            .trim() ===
             currentCategory
         ) {
 
@@ -534,22 +617,28 @@ function renderProducts() {
 
 
   if (!list) {
+
     return;
   }
 
 
-  list.innerHTML = "";
+  list.innerHTML =
+    "";
 
 
   const visible =
-    currentCategory === "all"
+
+    currentCategory ===
+      "all"
 
       ? products
 
       : products.filter(
+
           function (product) {
 
             return (
+
               product.category ===
               currentCategory
             );
@@ -577,20 +666,19 @@ function renderProducts() {
   }
 
 
-  // Build cards off-screen first.
-  // This reduces repeated DOM updates.
-
   const fragment =
     document.createDocumentFragment();
 
 
   visible.forEach(
+
     function (
       product,
       index
     ) {
 
       fragment.appendChild(
+
         createProductCard(
           product,
           index
@@ -625,9 +713,9 @@ function createProductCard(
     "product";
 
 
-  // ----------------------------------------------------------
-  // IMAGE
-  // ----------------------------------------------------------
+  // ==========================================================
+  // PRODUCT IMAGE
+  // ==========================================================
 
   const imageContainer =
     document.createElement(
@@ -647,6 +735,7 @@ function createProductCard(
 
   placeholder.className =
     "image-placeholder";
+
 
   placeholder.textContent =
     "Product Image";
@@ -672,12 +761,8 @@ function createProductCard(
       "product-image";
 
 
-    // --------------------------------------------------------
-    // IMAGE SPEED OPTIMIZATION
-    //
-    // First image gets priority.
-    // Other images load only when needed.
-    // --------------------------------------------------------
+    // First visible product gets
+    // loading priority.
 
     if (index === 0) {
 
@@ -692,8 +777,7 @@ function createProductCard(
 
       } catch (error) {
 
-        // Browser does not support
-        // fetchPriority.
+        // Ignore unsupported browser.
       }
 
     } else {
@@ -709,8 +793,7 @@ function createProductCard(
 
       } catch (error) {
 
-        // Browser does not support
-        // fetchPriority.
+        // Ignore unsupported browser.
       }
     }
 
@@ -737,6 +820,7 @@ function createProductCard(
         image.style.display =
           "none";
 
+
         placeholder.style.display =
           "flex";
       };
@@ -758,9 +842,9 @@ function createProductCard(
   );
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // PRODUCT INFORMATION
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const info =
     document.createElement(
@@ -772,7 +856,9 @@ function createProductCard(
     "product-info";
 
 
-  // Product number
+  // ----------------------------------------------------------
+  // PRODUCT NUMBER
+  // ----------------------------------------------------------
 
   const number =
     document.createElement(
@@ -793,7 +879,9 @@ function createProductCard(
   );
 
 
-  // Product name
+  // ----------------------------------------------------------
+  // PRODUCT NAME
+  // ----------------------------------------------------------
 
   const name =
     document.createElement(
@@ -814,7 +902,9 @@ function createProductCard(
   );
 
 
-  // Product description
+  // ----------------------------------------------------------
+  // DESCRIPTION
+  // ----------------------------------------------------------
 
   if (product.description) {
 
@@ -838,9 +928,9 @@ function createProductCard(
   }
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // PRICE
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const priceArea =
     document.createElement(
@@ -905,12 +995,14 @@ function createProductCard(
   );
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // STOCK
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const inStock =
+
     product.availableQty > 0 &&
+
     product.stockStatus !==
       "OUT OF STOCK";
 
@@ -922,14 +1014,20 @@ function createProductCard(
 
 
   stock.className =
+
     inStock
+
       ? "stock-status in-stock"
+
       : "stock-status out-of-stock";
 
 
   stock.textContent =
+
     inStock
+
       ? "In Stock"
+
       : "Out of Stock";
 
 
@@ -938,56 +1036,271 @@ function createProductCard(
   );
 
 
+  // ==========================================================
+  // PRODUCT ACTION ROW
+  //
+  // LEFT:
+  // Add to Cart
+  //
+  // RIGHT:
+  // -  quantity  +
+  // ==========================================================
+
+  const actionRow =
+    document.createElement(
+      "div"
+    );
+
+
+  actionRow.className =
+    "product-action-row";
+
+
   // ----------------------------------------------------------
-  // ADD TO CART
+  // ADD TO CART BUTTON
   // ----------------------------------------------------------
 
-  const button =
+  const addButton =
     document.createElement(
       "button"
     );
 
 
-  button.type =
+  addButton.type =
     "button";
 
 
-  button.className =
-    "add-button";
+  addButton.className =
+    "add-button product-add-button";
 
+
+  // ----------------------------------------------------------
+  // QUANTITY CONTROL AREA
+  // ----------------------------------------------------------
+
+  const quantityControls =
+    document.createElement(
+      "div"
+    );
+
+
+  quantityControls.className =
+    "product-quantity-controls";
+
+
+  // MINUS BUTTON
+
+  const minusButton =
+    document.createElement(
+      "button"
+    );
+
+
+  minusButton.type =
+    "button";
+
+
+  minusButton.className =
+    "product-quantity-button";
+
+
+  minusButton.textContent =
+    "−";
+
+
+  // QUANTITY DISPLAY
+
+  const quantityDisplay =
+    document.createElement(
+      "span"
+    );
+
+
+  quantityDisplay.className =
+    "product-selected-quantity";
+
+
+  // PLUS BUTTON
+
+  const plusButton =
+    document.createElement(
+      "button"
+    );
+
+
+  plusButton.type =
+    "button";
+
+
+  plusButton.className =
+    "product-quantity-button";
+
+
+  plusButton.textContent =
+    "+";
+
+
+  // ----------------------------------------------------------
+  // INITIAL QUANTITY
+  // ----------------------------------------------------------
+
+  if (
+    !productSelectedQuantities[
+      product.productNo
+    ]
+  ) {
+
+    productSelectedQuantities[
+      product.productNo
+    ] = 1;
+  }
+
+
+  let selectedQuantity =
+    productSelectedQuantities[
+      product.productNo
+    ];
+
+
+  // Safety in case stock has changed.
+
+  if (
+    inStock &&
+    selectedQuantity >
+      product.availableQty
+  ) {
+
+    selectedQuantity =
+      product.availableQty;
+
+
+    productSelectedQuantities[
+      product.productNo
+    ] =
+      selectedQuantity;
+  }
+
+
+  if (
+    selectedQuantity < 1
+  ) {
+
+    selectedQuantity = 1;
+
+
+    productSelectedQuantities[
+      product.productNo
+    ] = 1;
+  }
+
+
+  quantityDisplay.textContent =
+    selectedQuantity;
+
+
+  // ==========================================================
+  // IN STOCK CONTROLS
+  // ==========================================================
 
   if (inStock) {
 
-    button.textContent =
+    addButton.textContent =
       "Add to Cart";
 
 
-    button.onclick =
+    addButton.onclick =
       function () {
 
-        addToCart(
+        addSelectedQuantityToCart(
           product.productNo
         );
       };
 
+
+    minusButton.onclick =
+      function () {
+
+        decreaseProductSelection(
+          product.productNo,
+          quantityDisplay
+        );
+      };
+
+
+    plusButton.onclick =
+      function () {
+
+        increaseProductSelection(
+          product.productNo,
+          quantityDisplay
+        );
+      };
+
+
   } else {
 
-    button.textContent =
+    // ========================================================
+    // OUT OF STOCK
+    // ========================================================
+
+    addButton.textContent =
       "Out of Stock";
 
 
-    button.disabled =
+    addButton.disabled =
       true;
 
 
-    button.classList.add(
+    addButton.classList.add(
+      "disabled"
+    );
+
+
+    minusButton.disabled =
+      true;
+
+
+    plusButton.disabled =
+      true;
+
+
+    quantityDisplay.textContent =
+      "0";
+
+
+    quantityControls.classList.add(
       "disabled"
     );
   }
 
 
+  quantityControls.appendChild(
+    minusButton
+  );
+
+
+  quantityControls.appendChild(
+    quantityDisplay
+  );
+
+
+  quantityControls.appendChild(
+    plusButton
+  );
+
+
+  actionRow.appendChild(
+    addButton
+  );
+
+
+  actionRow.appendChild(
+    quantityControls
+  );
+
+
   info.appendChild(
-    button
+    actionRow
   );
 
 
@@ -1001,6 +1314,164 @@ function createProductCard(
 
 
 // ============================================================
+// PRODUCT-CARD QUANTITY - DECREASE
+// ============================================================
+
+function decreaseProductSelection(
+  productNo,
+  display
+) {
+
+  const product =
+    findProduct(
+      productNo
+    );
+
+
+  if (!product) {
+
+    return;
+  }
+
+
+  let quantity =
+    productSelectedQuantities[
+      productNo
+    ] || 1;
+
+
+  // On the product card,
+  // quantity cannot go below 1.
+
+  if (quantity > 1) {
+
+    quantity--;
+  }
+
+
+  productSelectedQuantities[
+    productNo
+  ] = quantity;
+
+
+  if (display) {
+
+    display.textContent =
+      quantity;
+  }
+}
+
+
+// ============================================================
+// PRODUCT-CARD QUANTITY - INCREASE
+// ============================================================
+
+function increaseProductSelection(
+  productNo,
+  display
+) {
+
+  const product =
+    findProduct(
+      productNo
+    );
+
+
+  if (!product) {
+
+    return;
+  }
+
+
+  let quantity =
+    productSelectedQuantities[
+      productNo
+    ] || 1;
+
+
+  // ----------------------------------------------------------
+  // CHECK QUANTITY ALREADY IN CART
+  // ----------------------------------------------------------
+
+  const cartItem =
+    cart.find(
+
+      function (item) {
+
+        return (
+          item.productNo ===
+          productNo
+        );
+      }
+    );
+
+
+  const alreadyInCart =
+
+    cartItem
+
+      ? cartItem.quantity
+
+      : 0;
+
+
+  // Maximum that can still be
+  // selected for another Add to Cart.
+
+  const remainingAvailable =
+
+    product.availableQty -
+    alreadyInCart;
+
+
+  if (
+    remainingAvailable <= 0
+  ) {
+
+    alert(
+      "You already have the maximum available quantity of this product in your cart."
+    );
+
+
+    return;
+  }
+
+
+  if (
+    quantity >=
+    remainingAvailable
+  ) {
+
+    alert(
+      "Only " +
+      product.availableQty +
+      " item(s) of " +
+      product.productName +
+      " are currently available."
+    );
+
+
+    return;
+  }
+
+
+  quantity++;
+
+
+  productSelectedQuantities[
+    productNo
+  ] = quantity;
+
+
+  if (display) {
+
+    display.textContent =
+      quantity;
+  }
+}
+
+
+// ============================================================
 // FIND PRODUCT
 // ============================================================
 
@@ -1009,10 +1480,13 @@ function findProduct(
 ) {
 
   return products.find(
+
     function (product) {
 
       return (
+
         product.productNo ===
+
         String(
           productNo
         )
@@ -1025,10 +1499,10 @@ function findProduct(
 
 
 // ============================================================
-// ADD TO CART
+// ADD SELECTED PRODUCT QUANTITY TO CART
 // ============================================================
 
-function addToCart(
+function addSelectedQuantityToCart(
   productNo
 ) {
 
@@ -1039,6 +1513,7 @@ function addToCart(
 
 
   if (!product) {
+
     return;
   }
 
@@ -1051,15 +1526,34 @@ function addToCart(
       "This product is out of stock."
     );
 
+
     return;
   }
 
 
+  let selectedQuantity =
+
+    productSelectedQuantities[
+      productNo
+    ] || 1;
+
+
+  selectedQuantity =
+    Math.max(
+      1,
+      Number(
+        selectedQuantity
+      ) || 1
+    );
+
+
   const existing =
     cart.find(
+
       function (item) {
 
         return (
+
           item.productNo ===
           product.productNo
         );
@@ -1067,25 +1561,66 @@ function addToCart(
     );
 
 
-  if (existing) {
+  const currentCartQuantity =
 
-    if (
-      existing.quantity >=
-      product.availableQty
-    ) {
+    existing
+
+      ? existing.quantity
+
+      : 0;
+
+
+  const newTotalQuantity =
+
+    currentCartQuantity +
+    selectedQuantity;
+
+
+  // ----------------------------------------------------------
+  // DO NOT ALLOW MORE THAN AVAILABLE STOCK
+  // ----------------------------------------------------------
+
+  if (
+    newTotalQuantity >
+    product.availableQty
+  ) {
+
+    const remaining =
+
+      product.availableQty -
+      currentCartQuantity;
+
+
+    if (remaining <= 0) {
 
       alert(
-        "Only " +
-        product.availableQty +
-        " item(s) are currently available."
+        "You already have the maximum available quantity of this product in your cart."
       );
 
+    } else {
 
-      return;
+      alert(
+        "You can add only " +
+        remaining +
+        " more item(s) of " +
+        product.productName +
+        "."
+      );
     }
 
 
-    existing.quantity++;
+    return;
+  }
+
+
+  // ----------------------------------------------------------
+  // ADD TO EXISTING CART ITEM
+  // ----------------------------------------------------------
+
+  if (existing) {
+
+    existing.quantity =
+      newTotalQuantity;
 
   } else {
 
@@ -1100,17 +1635,58 @@ function addToCart(
       price:
         product.offerPrice,
 
-      quantity: 1
+      quantity:
+        selectedQuantity
     });
   }
 
 
+  // ----------------------------------------------------------
+  // RESET PRODUCT SELECTOR TO 1
+  //
+  // This prevents the customer accidentally
+  // adding the same large quantity twice.
+  // ----------------------------------------------------------
+
+  productSelectedQuantities[
+    productNo
+  ] = 1;
+
+
   updateCart();
+
+
+  // Re-render so selector visibly
+  // returns to 1.
+
+  renderProducts();
 }
 
 
 // ============================================================
-// INCREASE QUANTITY
+// OLD SINGLE-ITEM ADD FUNCTION
+//
+// Kept for compatibility in case any existing HTML
+// or future code still calls addToCart().
+// ============================================================
+
+function addToCart(
+  productNo
+) {
+
+  productSelectedQuantities[
+    productNo
+  ] = 1;
+
+
+  addSelectedQuantityToCart(
+    productNo
+  );
+}
+
+
+// ============================================================
+// CART - INCREASE QUANTITY
 // ============================================================
 
 function increaseQuantity(
@@ -1119,6 +1695,7 @@ function increaseQuantity(
 
   const item =
     cart.find(
+
       function (item) {
 
         return (
@@ -1168,7 +1745,7 @@ function increaseQuantity(
 
 
 // ============================================================
-// DECREASE QUANTITY
+// CART - DECREASE QUANTITY
 // ============================================================
 
 function decreaseQuantity(
@@ -1177,6 +1754,7 @@ function decreaseQuantity(
 
   const item =
     cart.find(
+
       function (item) {
 
         return (
@@ -1188,6 +1766,7 @@ function decreaseQuantity(
 
 
   if (!item) {
+
     return;
   }
 
@@ -1222,6 +1801,7 @@ function removeFromCart(
 
   cart =
     cart.filter(
+
       function (item) {
 
         return (
@@ -1243,17 +1823,21 @@ function removeFromCart(
 function getCartTotal() {
 
   return cart.reduce(
+
     function (
       total,
       item
     ) {
 
       return (
+
         total +
+
         item.price *
         item.quantity
       );
     },
+
     0
   );
 }
@@ -1266,16 +1850,19 @@ function getCartTotal() {
 function getCartCount() {
 
   return cart.reduce(
+
     function (
       total,
       item
     ) {
 
       return (
+
         total +
         item.quantity
       );
     },
+
     0
   );
 }
@@ -1398,6 +1985,7 @@ function updateCart() {
 
 
   cart.forEach(
+
     function (item) {
 
       const row =
@@ -1411,7 +1999,7 @@ function updateCart() {
 
 
       // ------------------------------------------------------
-      // DETAILS
+      // PRODUCT DETAILS
       // ------------------------------------------------------
 
       const details =
@@ -1463,9 +2051,11 @@ function updateCart() {
 
 
       price.textContent =
+
         formatCurrency(
           item.price
         ) +
+
         " each";
 
 
@@ -1485,7 +2075,7 @@ function updateCart() {
 
 
       // ------------------------------------------------------
-      // QUANTITY CONTROLS
+      // SECOND-CHANCE QUANTITY CONTROLS
       // ------------------------------------------------------
 
       const controls =
@@ -1659,6 +2249,7 @@ function updateCheckoutSummary() {
 
 
   if (!box) {
+
     return;
   }
 
@@ -1672,6 +2263,7 @@ function updateCheckoutSummary() {
 
 
   cart.forEach(
+
     function (item) {
 
       const row =
@@ -1691,6 +2283,7 @@ function updateCheckoutSummary() {
 
 
       name.textContent =
+
         item.productName +
         " × " +
         item.quantity;
@@ -1704,6 +2297,7 @@ function updateCheckoutSummary() {
 
       price.textContent =
         formatCurrency(
+
           item.price *
           item.quantity
         );
@@ -1866,16 +2460,20 @@ function closeCheckout() {
 function createProductData() {
 
   return cart
+
     .map(
+
       function (item) {
 
         return (
+
           item.productNo +
           ":" +
           item.quantity
         );
       }
     )
+
     .join("|");
 }
 
@@ -2009,22 +2607,27 @@ function getCustomerData() {
 
   return {
 
-    name: name,
+    name:
+      name,
 
-    mobile: mobile,
+    mobile:
+      mobile,
 
-    address: address,
+    address:
+      address,
 
-    city: city,
+    city:
+      city,
 
-    pincode: pincode
+    pincode:
+      pincode
   };
 }
 
 
 // ============================================================
 // PLACE ORDER
-// SAME-TAB CONFIRMATION VERSION
+// SAME-TAB ORDER CONFIRMATION
 // ============================================================
 
 async function placeOrder() {
@@ -2071,10 +2674,9 @@ async function placeOrder() {
   try {
 
     // --------------------------------------------------------
-    // FRESH STOCK CHECK
+    // FRESH SERVER STOCK CHECK
     //
-    // We intentionally keep this.
-    // The customer may have had the page open for some time.
+    // This is intentionally retained.
     // --------------------------------------------------------
 
     const latest =
@@ -2123,6 +2725,7 @@ async function placeOrder() {
       if (!product) {
 
         throw new Error(
+
           item.productName +
           " is no longer available."
         );
@@ -2134,6 +2737,7 @@ async function placeOrder() {
       ) {
 
         throw new Error(
+
           product.productName +
           " is out of stock."
         );
@@ -2146,16 +2750,21 @@ async function placeOrder() {
       ) {
 
         throw new Error(
+
           "Only " +
+
           product.availableQty +
+
           " item(s) of " +
+
           product.productName +
+
           " are currently available."
         );
       }
 
 
-      // Always use latest server price.
+      // Latest server price wins.
 
       item.price =
         product.offerPrice;
@@ -2167,15 +2776,16 @@ async function placeOrder() {
 
     // --------------------------------------------------------
     // UNIQUE SUBMISSION ID
-    //
-    // This continues to support the duplicate-order
-    // protection in Code.gs.
     // --------------------------------------------------------
 
     const submissionId =
+
       "SUB-" +
+
       Date.now() +
+
       "-" +
+
       Math.random()
         .toString(36)
         .substring(
@@ -2189,20 +2799,26 @@ async function placeOrder() {
       submissionId:
         submissionId,
 
+
       name:
         customer.name,
+
 
       mobile:
         customer.mobile,
 
+
       address:
         customer.address,
+
 
       city:
         customer.city,
 
+
       pincode:
         customer.pincode,
+
 
       productData:
         createProductData()
@@ -2210,7 +2826,7 @@ async function placeOrder() {
 
 
     // --------------------------------------------------------
-    // CREATE NORMAL FORM
+    // FORM SUBMISSION
     // --------------------------------------------------------
 
     const form =
@@ -2227,20 +2843,7 @@ async function placeOrder() {
       googleScriptURL;
 
 
-    // ========================================================
-    // IMPORTANT CHANGE
-    //
-    // OLD VERSION:
-    //
-    // form.target = "_blank";
-    //
-    // That opened Apps Script in a new tab.
-    //
-    // NEW VERSION:
-    //
-    // _self loads the confirmed Apps Script result
-    // in the CURRENT browser tab.
-    // ========================================================
+    // SAME TAB
 
     form.target =
       "_self";
@@ -2250,9 +2853,7 @@ async function placeOrder() {
       "none";
 
 
-    // --------------------------------------------------------
-    // ACTION
-    // --------------------------------------------------------
+    // ACTION INPUT
 
     const action =
       document.createElement(
@@ -2272,9 +2873,7 @@ async function placeOrder() {
       "placeOrder";
 
 
-    // --------------------------------------------------------
-    // ORDER DATA
-    // --------------------------------------------------------
+    // ORDER DATA INPUT
 
     const data =
       document.createElement(
@@ -2311,10 +2910,6 @@ async function placeOrder() {
     );
 
 
-    // --------------------------------------------------------
-    // CHANGE BUTTON WHILE SERVER PROCESSES
-    // --------------------------------------------------------
-
     if (button) {
 
       button.textContent =
@@ -2323,24 +2918,14 @@ async function placeOrder() {
 
 
     // --------------------------------------------------------
-    // SUBMIT IN CURRENT TAB
+    // APPS SCRIPT NOW TAKES OVER THIS TAB.
     //
-    // Apps Script now takes over this browser tab.
-    //
-    // Code.gs:
-    // 1. validates order
-    // 2. checks stock
-    // 3. creates order
-    // 4. updates inventory
-    // 5. displays confirmed order page
-    // 6. provides SEND ORDER ON WHATSAPP button
+    // It verifies and creates the order,
+    // then displays the confirmed order page
+    // containing the WhatsApp confirmation button.
     // --------------------------------------------------------
 
     form.submit();
-
-
-    // Do not remove the form before navigation.
-    // Browser navigation will replace this page.
 
 
   } catch (error) {
@@ -2361,7 +2946,9 @@ async function placeOrder() {
 
 
     alert(
+
       error.message ||
+
       "Unable to verify stock."
     );
   }
@@ -2435,7 +3022,7 @@ function closeCategoryMenu() {
 
 
 // ============================================================
-// CUSTOMER / CONTACT DRAWER
+// CUSTOMER MENU
 // ============================================================
 
 function openCustomerMenu() {
@@ -2507,12 +3094,17 @@ function closeCustomerMenu() {
 function openBusinessWhatsApp() {
 
   window.open(
+
     "https://wa.me/" +
+
     businessWhatsApp +
+
     "?text=" +
+
     encodeURIComponent(
       "Hello Festive Cart, I need assistance."
     ),
+
     "_blank"
   );
 }
@@ -2536,7 +3128,9 @@ function openInstagram() {
 
 
   window.open(
+
     instagramURL,
+
     "_blank"
   );
 }
@@ -2551,12 +3145,16 @@ function formatCurrency(
 ) {
 
   return (
+
     "₹" +
+
     (
       Number(amount) ||
       0
     ).toLocaleString(
+
       "en-IN",
+
       {
         maximumFractionDigits:
           2
@@ -2571,7 +3169,9 @@ function formatCurrency(
 // ============================================================
 
 document.addEventListener(
+
   "keydown",
+
   function (event) {
 
     if (
