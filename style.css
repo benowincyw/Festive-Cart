@@ -276,11 +276,20 @@ button {
 
 
 /* ============================================================
-   ADD TO CART
+   PRODUCT ACTION ROW
+   ADD TO CART + - QUANTITY +
    ============================================================ */
+
+.product-action-row {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
 
 .add-button {
   width: 100%;
+  min-height: 48px;
   padding: 13px 15px;
   border: none;
   border-radius: 9px;
@@ -288,6 +297,11 @@ button {
   color: #ffffff;
   font-size: 16px;
   font-weight: 700;
+}
+
+.product-action-row.has-quantity .add-button {
+  width: auto;
+  flex: 1 1 50%;
 }
 
 .add-button:hover {
@@ -300,6 +314,51 @@ button {
   background: #bdbdbd;
   color: #ffffff;
   opacity: 1;
+}
+
+.product-quantity-controls {
+  display: none;
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 48px;
+  align-items: stretch;
+  overflow: hidden;
+  border: 2px solid #11823b;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.product-quantity-controls.show {
+  display: flex;
+}
+
+.product-quantity-button {
+  flex: 1 1 33.333%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: #11823b;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.product-quantity-button:hover {
+  opacity: 0.92;
+}
+
+.product-quantity-value {
+  flex: 1 1 33.333%;
+  min-width: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #222222;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 
@@ -934,6 +993,25 @@ button {
   }
 
   .offer-price {
+    font-size: 22px;
+  }
+
+  .product-action-row {
+    gap: 7px;
+  }
+
+  .add-button {
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 15px;
+  }
+
+  .product-quantity-value {
+    min-width: 34px;
+    font-size: 17px;
+  }
+
+  .product-quantity-button {
     font-size: 22px;
   }
 
