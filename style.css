@@ -356,12 +356,26 @@ button {
 
 
 /* ============================================================
+   PRODUCT ACTION ROW
+   ADD TO CART + QUANTITY
+   ============================================================ */
+
+.product-action-row {
+  width: 100%;
+
+  display: flex;
+  align-items: stretch;
+
+  gap: 10px;
+}
+
+
+/* ============================================================
    ADD TO CART
+   LEFT HALF
    ============================================================ */
 
 .add-button {
-  width: 100%;
-
   padding: 13px 15px;
 
   border: none;
@@ -372,6 +386,15 @@ button {
 
   font-size: 16px;
   font-weight: 700;
+}
+
+.product-add-button {
+  flex: 1 1 50%;
+
+  width: 50%;
+  min-width: 0;
+
+  min-height: 48px;
 }
 
 .add-button:hover {
@@ -386,6 +409,93 @@ button {
   color: #ffffff;
 
   opacity: 1;
+}
+
+
+/* ============================================================
+   PRODUCT QUANTITY SELECTOR
+   RIGHT HALF
+   ============================================================ */
+
+.product-quantity-controls {
+  flex: 1 1 50%;
+
+  width: 50%;
+  min-width: 0;
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  overflow: hidden;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 9px;
+
+  background: #ffffff;
+}
+
+.product-quantity-button {
+  flex: 0 0 38px;
+
+  width: 38px;
+  height: 46px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  background: #f4f4f4;
+  color: #222;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  line-height: 1;
+}
+
+.product-quantity-button:hover {
+  background: #e9e9e9;
+}
+
+.product-quantity-button:active {
+  background: #dddddd;
+}
+
+.product-selected-quantity {
+  flex: 1;
+
+  min-width: 28px;
+
+  padding: 0 3px;
+
+  color: #222;
+
+  text-align: center;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.product-quantity-controls.disabled {
+  background: #f5f5f5;
+
+  border-color: #dddddd;
+
+  opacity: 0.65;
+}
+
+.product-quantity-controls.disabled
+.product-quantity-button {
+  cursor: not-allowed;
+
+  background: #eeeeee;
+  color: #999999;
 }
 
 
@@ -715,6 +825,7 @@ button {
 
 /* ============================================================
    CART QUANTITY CONTROLS
+   SECOND CHANCE TO CHANGE QUANTITY
    ============================================================ */
 
 .cart-item-controls {
@@ -1107,6 +1218,35 @@ button {
 
   .offer-price {
     font-size: 22px;
+  }
+
+
+  /* Keep both controls on one row
+     even on smaller phones */
+
+  .product-action-row {
+    gap: 7px;
+  }
+
+  .add-button {
+    padding-left: 8px;
+    padding-right: 8px;
+
+    font-size: 14px;
+  }
+
+  .product-quantity-button {
+    flex-basis: 34px;
+
+    width: 34px;
+
+    font-size: 20px;
+  }
+
+  .product-selected-quantity {
+    min-width: 22px;
+
+    font-size: 15px;
   }
 
 }
