@@ -1,13 +1,12 @@
 // ============================================================
 // FESTIVE CART - SCRIPT.JS
-// AUTOMATIC CATEGORIES + OPTIMIZED PRODUCT LOADING
+// AUTOMATIC CATEGORIES + FAST IMAGE LOADING
+// SAME-TAB ORDER CONFIRMATION
 // ============================================================
 
-const businessWhatsApp =
-  "919500417696";
+const businessWhatsApp = "919500417696";
 
-const customerSupportNumber =
-  "9500417696";
+const customerSupportNumber = "9500417696";
 
 const instagramURL = "";
 
@@ -15,12 +14,14 @@ const googleScriptURL =
   "https://script.google.com/macros/s/AKfycbwtXCf4FvtaCEoKQH9PvXfwWc1Xa1UNLa_dcK5I1c11IJiolxfuybQCBqZ2OHtSy4ufDA/exec";
 
 
+// ============================================================
+// GLOBAL DATA
+// ============================================================
+
 let cart = [];
 
 let products = [];
 
-// Categories are now supplied separately by Apps Script.
-// This allows an empty spreadsheet tab to appear in the menu.
 let categories = [];
 
 let currentCategory = "all";
@@ -44,10 +45,11 @@ document.addEventListener(
 
 
 // ============================================================
-// PRODUCTS
+// LOAD PRODUCTS
 // ============================================================
 
 async function loadProducts() {
+
   const loading =
     document.getElementById(
       "products-loading"
@@ -63,81 +65,102 @@ async function loadProducts() {
       "no-products"
     );
 
+
   if (loading) {
     loading.style.display = "block";
   }
+
 
   if (errorBox) {
     errorBox.style.display = "none";
   }
 
+
   if (noProducts) {
     noProducts.style.display = "none";
   }
 
+
   try {
+
     const data =
       await fetchLatestCatalogue();
+
 
     products =
       normalizeProducts(
         data.products
       );
 
+
     // --------------------------------------------------------
-    // AUTOMATIC CATEGORY LIST
+    // CATEGORY LIST
     //
-    // New Code.gs returns:
-    // {
-    //   success: true,
-    //   categories: [...],
-    //   products: [...]
-    // }
-    //
-    // If categories are unavailable for any reason,
-    // we fall back to deriving them from products.
+    // Code.gs supplies all spreadsheet tab names separately.
+    // Therefore even an empty product sheet can appear
+    // as a category.
     // --------------------------------------------------------
 
-    if (Array.isArray(data.categories)) {
+    if (
+      Array.isArray(
+        data.categories
+      )
+    ) {
+
       categories =
         normalizeCategories(
           data.categories
         );
+
     } else {
+
+      // Fallback for compatibility
       categories =
         getCategoriesFromProducts();
     }
 
+
     catalogueLoaded = true;
 
+
     if (loading) {
-      loading.style.display = "none";
+      loading.style.display =
+        "none";
     }
 
+
     createCategoryMenu();
+
     renderProducts();
 
+
   } catch (error) {
+
     console.error(error);
 
     catalogueLoaded = false;
 
+
     if (loading) {
-      loading.style.display = "none";
+      loading.style.display =
+        "none";
     }
 
+
     if (errorBox) {
-      errorBox.style.display = "block";
+      errorBox.style.display =
+        "block";
     }
   }
 }
 
 
 // ============================================================
-// FETCH CATALOGUE
+// FETCH PRODUCT CATALOGUE
 // ============================================================
 
 async function fetchLatestCatalogue() {
+
   const response =
     await fetch(
       googleScriptURL +
@@ -149,26 +172,34 @@ async function fetchLatestCatalogue() {
       }
     );
 
+
   if (!response.ok) {
+
     throw new Error(
       "Unable to load products."
     );
   }
 
+
   const data =
     await response.json();
+
 
   if (
     !data ||
     data.success !== true ||
-    !Array.isArray(data.products)
+    !Array.isArray(
+      data.products
+    )
   ) {
+
     throw new Error(
       data && data.error
         ? data.error
         : "Unable to load products."
     );
   }
+
 
   return data;
 }
@@ -179,47 +210,71 @@ async function fetchLatestCatalogue() {
 // ============================================================
 
 function normalizeProducts(list) {
+
   if (!Array.isArray(list)) {
     return [];
   }
 
-  return list.map(function (p) {
-    return {
-      category:
-        String(p.category || "").trim(),
 
-      productNo:
-        String(p.productNo || "")
-          .trim()
-          .toUpperCase(),
+  return list.map(
+    function (p) {
 
-      productName:
-        String(p.productName || "").trim(),
+      return {
 
-      description:
-        String(p.description || "").trim(),
+        category:
+          String(
+            p.category || ""
+          ).trim(),
 
-      actualPrice:
-        Number(p.actualPrice) || 0,
+        productNo:
+          String(
+            p.productNo || ""
+          )
+            .trim()
+            .toUpperCase(),
 
-      offerPrice:
-        Number(p.offerPrice) || 0,
+        productName:
+          String(
+            p.productName || ""
+          ).trim(),
 
-      availableQty:
-        Math.max(
-          0,
-          Number(p.availableQty) || 0
-        ),
+        description:
+          String(
+            p.description || ""
+          ).trim(),
 
-      stockStatus:
-        String(p.stockStatus || "")
-          .trim()
-          .toUpperCase(),
+        actualPrice:
+          Number(
+            p.actualPrice
+          ) || 0,
 
-      imageURL:
-        String(p.imageURL || "").trim()
-    };
-  });
+        offerPrice:
+          Number(
+            p.offerPrice
+          ) || 0,
+
+        availableQty:
+          Math.max(
+            0,
+            Number(
+              p.availableQty
+            ) || 0
+          ),
+
+        stockStatus:
+          String(
+            p.stockStatus || ""
+          )
+            .trim()
+            .toUpperCase(),
+
+        imageURL:
+          String(
+            p.imageURL || ""
+          ).trim()
+      };
+    }
+  );
 }
 
 
@@ -228,19 +283,29 @@ function normalizeProducts(list) {
 // ============================================================
 
 function normalizeCategories(list) {
+
   const clean = [];
 
-  list.forEach(function (category) {
-    const name =
-      String(category || "").trim();
 
-    if (
-      name &&
-      !clean.includes(name)
-    ) {
-      clean.push(name);
+  list.forEach(
+    function (category) {
+
+      const name =
+        String(
+          category || ""
+        ).trim();
+
+
+      if (
+        name &&
+        !clean.includes(name)
+      ) {
+
+        clean.push(name);
+      }
     }
-  });
+  );
+
 
   return clean;
 }
@@ -251,20 +316,27 @@ function normalizeCategories(list) {
 // ============================================================
 
 function getCategoriesFromProducts() {
+
   const result = [];
 
-  products.forEach(function (product) {
-    if (
-      product.category &&
-      !result.includes(
-        product.category
-      )
-    ) {
-      result.push(
-        product.category
-      );
+
+  products.forEach(
+    function (product) {
+
+      if (
+        product.category &&
+        !result.includes(
+          product.category
+        )
+      ) {
+
+        result.push(
+          product.category
+        );
+      }
     }
-  });
+  );
+
 
   return result;
 }
@@ -275,46 +347,70 @@ function getCategoriesFromProducts() {
 // ============================================================
 
 function createCategoryMenu() {
+
   const categoryList =
     document.getElementById(
       "category-list"
     );
 
-  if (!categoryList) return;
+
+  if (!categoryList) {
+    return;
+  }
+
 
   categoryList.innerHTML = "";
+
 
   // ----------------------------------------------------------
   // ALL PRODUCTS
   // ----------------------------------------------------------
 
   const allButton =
-    document.createElement("button");
+    document.createElement(
+      "button"
+    );
 
-  allButton.type = "button";
-  allButton.className = "menu-item";
-  allButton.textContent = "All Products";
 
-  allButton.onclick = function () {
-    filterProducts("all");
-  };
+  allButton.type =
+    "button";
+
+  allButton.className =
+    "menu-item";
+
+  allButton.textContent =
+    "All Products";
+
+
+  allButton.onclick =
+    function () {
+
+      filterProducts(
+        "all"
+      );
+    };
+
 
   categoryList.appendChild(
     allButton
   );
 
+
   // ----------------------------------------------------------
-  // AUTOMATIC SHEET CATEGORIES
+  // AUTOMATIC CATEGORIES
   // ----------------------------------------------------------
 
   categories.forEach(
     function (category) {
+
       const button =
         document.createElement(
           "button"
         );
 
-      button.type = "button";
+
+      button.type =
+        "button";
 
       button.className =
         "menu-item";
@@ -322,18 +418,22 @@ function createCategoryMenu() {
       button.textContent =
         category;
 
+
       button.onclick =
         function () {
+
           filterProducts(
             category
           );
         };
+
 
       categoryList.appendChild(
         button
       );
     }
   );
+
 
   updateActiveCategoryButton();
 }
@@ -344,11 +444,15 @@ function createCategoryMenu() {
 // ============================================================
 
 function filterProducts(category) {
+
   currentCategory =
     category || "all";
 
+
   updateActiveCategoryButton();
+
   renderProducts();
+
   closeCategoryMenu();
 }
 
@@ -358,41 +462,56 @@ function filterProducts(category) {
 // ============================================================
 
 function updateActiveCategoryButton() {
+
   const categoryList =
     document.getElementById(
       "category-list"
     );
 
-  if (!categoryList) return;
+
+  if (!categoryList) {
+    return;
+  }
+
 
   categoryList
-    .querySelectorAll(".menu-item")
-    .forEach(function (button) {
+    .querySelectorAll(
+      ".menu-item"
+    )
+    .forEach(
+      function (button) {
 
-      button.classList.remove(
-        "active-category"
-      );
-
-      if (
-        currentCategory === "all" &&
-        button.textContent.trim() ===
-          "All Products"
-      ) {
-        button.classList.add(
+        button.classList.remove(
           "active-category"
         );
-      }
 
-      if (
-        currentCategory !== "all" &&
-        button.textContent.trim() ===
-          currentCategory
-      ) {
-        button.classList.add(
-          "active-category"
-        );
+
+        if (
+          currentCategory ===
+            "all" &&
+          button.textContent.trim() ===
+            "All Products"
+        ) {
+
+          button.classList.add(
+            "active-category"
+          );
+        }
+
+
+        if (
+          currentCategory !==
+            "all" &&
+          button.textContent.trim() ===
+            currentCategory
+        ) {
+
+          button.classList.add(
+            "active-category"
+          );
+        }
       }
-    });
+    );
 }
 
 
@@ -401,25 +520,35 @@ function updateActiveCategoryButton() {
 // ============================================================
 
 function renderProducts() {
+
   const list =
     document.getElementById(
       "product-list"
     );
+
 
   const noProducts =
     document.getElementById(
       "no-products"
     );
 
-  if (!list) return;
+
+  if (!list) {
+    return;
+  }
+
 
   list.innerHTML = "";
 
+
   const visible =
     currentCategory === "all"
+
       ? products
+
       : products.filter(
           function (product) {
+
             return (
               product.category ===
               currentCategory
@@ -427,25 +556,40 @@ function renderProducts() {
           }
         );
 
+
   if (!visible.length) {
+
     if (noProducts) {
+
       noProducts.style.display =
         "block";
     }
 
+
     return;
   }
 
+
   if (noProducts) {
+
     noProducts.style.display =
       "none";
   }
 
+
+  // Build cards off-screen first.
+  // This reduces repeated DOM updates.
+
   const fragment =
     document.createDocumentFragment();
 
+
   visible.forEach(
-    function (product, index) {
+    function (
+      product,
+      index
+    ) {
+
       fragment.appendChild(
         createProductCard(
           product,
@@ -455,34 +599,41 @@ function renderProducts() {
     }
   );
 
-  list.appendChild(fragment);
+
+  list.appendChild(
+    fragment
+  );
 }
 
 
 // ============================================================
-// PRODUCT CARD
+// CREATE PRODUCT CARD
 // ============================================================
 
 function createProductCard(
   product,
   index
 ) {
+
   const card =
     document.createElement(
       "article"
     );
 
-  card.className = "product";
+
+  card.className =
+    "product";
 
 
   // ----------------------------------------------------------
-  // IMAGE AREA
+  // IMAGE
   // ----------------------------------------------------------
 
   const imageContainer =
     document.createElement(
       "div"
     );
+
 
   imageContainer.className =
     "product-image-container";
@@ -493,6 +644,7 @@ function createProductCard(
       "div"
     );
 
+
   placeholder.className =
     "image-placeholder";
 
@@ -501,72 +653,93 @@ function createProductCard(
 
 
   if (product.imageURL) {
+
     const image =
       document.createElement(
         "img"
       );
 
+
     image.src =
       product.imageURL;
+
 
     image.alt =
       product.productName;
 
+
     image.className =
       "product-image";
 
+
     // --------------------------------------------------------
-    // SPEED OPTIMIZATION
+    // IMAGE SPEED OPTIMIZATION
     //
-    // First product can load immediately.
-    // Remaining product images are lazy-loaded.
+    // First image gets priority.
+    // Other images load only when needed.
     // --------------------------------------------------------
 
     if (index === 0) {
-      image.loading = "eager";
+
+      image.loading =
+        "eager";
+
 
       try {
+
         image.fetchPriority =
           "high";
+
       } catch (error) {
-        // Older browsers simply ignore this.
+
+        // Browser does not support
+        // fetchPriority.
       }
 
     } else {
-      image.loading = "lazy";
+
+      image.loading =
+        "lazy";
+
 
       try {
+
         image.fetchPriority =
           "low";
+
       } catch (error) {
-        // Older browsers simply ignore this.
+
+        // Browser does not support
+        // fetchPriority.
       }
     }
 
-    // Browser can decode image without
-    // blocking other page work.
-    image.decoding = "async";
+
+    image.decoding =
+      "async";
 
 
-    // Keep placeholder until
-    // image has actually loaded.
     placeholder.style.display =
       "flex";
 
 
-    image.onload = function () {
-      placeholder.style.display =
-        "none";
-    };
+    image.onload =
+      function () {
+
+        placeholder.style.display =
+          "none";
+      };
 
 
-    image.onerror = function () {
-      image.style.display =
-        "none";
+    image.onerror =
+      function () {
 
-      placeholder.style.display =
-        "flex";
-    };
+        image.style.display =
+          "none";
+
+        placeholder.style.display =
+          "flex";
+      };
 
 
     imageContainer.appendChild(
@@ -594,6 +767,7 @@ function createProductCard(
       "div"
     );
 
+
   info.className =
     "product-info";
 
@@ -605,11 +779,14 @@ function createProductCard(
       "div"
     );
 
+
   number.className =
     "product-number";
 
+
   number.textContent =
     product.productNo;
+
 
   info.appendChild(
     number
@@ -623,30 +800,37 @@ function createProductCard(
       "h3"
     );
 
+
   name.className =
     "product-name";
 
+
   name.textContent =
     product.productName;
+
 
   info.appendChild(
     name
   );
 
 
-  // Description
+  // Product description
 
   if (product.description) {
+
     const description =
       document.createElement(
         "p"
       );
 
+
     description.className =
       "product-description";
 
+
     description.textContent =
       product.description;
+
 
     info.appendChild(
       description
@@ -663,6 +847,7 @@ function createProductCard(
       "div"
     );
 
+
   priceArea.className =
     "product-price-area";
 
@@ -671,18 +856,22 @@ function createProductCard(
     product.actualPrice >
     product.offerPrice
   ) {
+
     const actual =
       document.createElement(
         "span"
       );
 
+
     actual.className =
       "actual-price";
+
 
     actual.textContent =
       formatCurrency(
         product.actualPrice
       );
+
 
     priceArea.appendChild(
       actual
@@ -695,17 +884,21 @@ function createProductCard(
       "span"
     );
 
+
   offer.className =
     "offer-price";
+
 
   offer.textContent =
     formatCurrency(
       product.offerPrice
     );
 
+
   priceArea.appendChild(
     offer
   );
+
 
   info.appendChild(
     priceArea
@@ -727,15 +920,18 @@ function createProductCard(
       "div"
     );
 
+
   stock.className =
     inStock
       ? "stock-status in-stock"
       : "stock-status out-of-stock";
 
+
   stock.textContent =
     inStock
       ? "In Stock"
       : "Out of Stock";
+
 
   info.appendChild(
     stock
@@ -751,28 +947,38 @@ function createProductCard(
       "button"
     );
 
-  button.type = "button";
+
+  button.type =
+    "button";
+
 
   button.className =
     "add-button";
 
 
   if (inStock) {
+
     button.textContent =
       "Add to Cart";
 
+
     button.onclick =
       function () {
+
         addToCart(
           product.productNo
         );
       };
 
   } else {
+
     button.textContent =
       "Out of Stock";
 
-    button.disabled = true;
+
+    button.disabled =
+      true;
+
 
     button.classList.add(
       "disabled"
@@ -784,9 +990,11 @@ function createProductCard(
     button
   );
 
+
   card.appendChild(
     info
   );
+
 
   return card;
 }
@@ -796,12 +1004,18 @@ function createProductCard(
 // FIND PRODUCT
 // ============================================================
 
-function findProduct(productNo) {
+function findProduct(
+  productNo
+) {
+
   return products.find(
     function (product) {
+
       return (
         product.productNo ===
-        String(productNo)
+        String(
+          productNo
+        )
           .trim()
           .toUpperCase()
       );
@@ -814,13 +1028,25 @@ function findProduct(productNo) {
 // ADD TO CART
 // ============================================================
 
-function addToCart(productNo) {
+function addToCart(
+  productNo
+) {
+
   const product =
-    findProduct(productNo);
+    findProduct(
+      productNo
+    );
 
-  if (!product) return;
 
-  if (product.availableQty <= 0) {
+  if (!product) {
+    return;
+  }
+
+
+  if (
+    product.availableQty <= 0
+  ) {
+
     alert(
       "This product is out of stock."
     );
@@ -832,6 +1058,7 @@ function addToCart(productNo) {
   const existing =
     cart.find(
       function (item) {
+
         return (
           item.productNo ===
           product.productNo
@@ -846,20 +1073,24 @@ function addToCart(productNo) {
       existing.quantity >=
       product.availableQty
     ) {
+
       alert(
         "Only " +
         product.availableQty +
         " item(s) are currently available."
       );
 
+
       return;
     }
+
 
     existing.quantity++;
 
   } else {
 
     cart.push({
+
       productNo:
         product.productNo,
 
@@ -885,9 +1116,11 @@ function addToCart(productNo) {
 function increaseQuantity(
   productNo
 ) {
+
   const item =
     cart.find(
       function (item) {
+
         return (
           item.productNo ===
           productNo
@@ -902,7 +1135,11 @@ function increaseQuantity(
     );
 
 
-  if (!item || !product) {
+  if (
+    !item ||
+    !product
+  ) {
+
     return;
   }
 
@@ -911,17 +1148,20 @@ function increaseQuantity(
     item.quantity >=
     product.availableQty
   ) {
+
     alert(
       "Only " +
       product.availableQty +
       " item(s) are currently available."
     );
 
+
     return;
   }
 
 
   item.quantity++;
+
 
   updateCart();
 }
@@ -934,9 +1174,11 @@ function increaseQuantity(
 function decreaseQuantity(
   productNo
 ) {
+
   const item =
     cart.find(
       function (item) {
+
         return (
           item.productNo ===
           productNo
@@ -945,16 +1187,22 @@ function decreaseQuantity(
     );
 
 
-  if (!item) return;
+  if (!item) {
+    return;
+  }
 
 
   item.quantity--;
 
 
-  if (item.quantity <= 0) {
+  if (
+    item.quantity <= 0
+  ) {
+
     removeFromCart(
       productNo
     );
+
 
     return;
   }
@@ -971,9 +1219,11 @@ function decreaseQuantity(
 function removeFromCart(
   productNo
 ) {
+
   cart =
     cart.filter(
       function (item) {
+
         return (
           item.productNo !==
           productNo
@@ -991,8 +1241,13 @@ function removeFromCart(
 // ============================================================
 
 function getCartTotal() {
+
   return cart.reduce(
-    function (total, item) {
+    function (
+      total,
+      item
+    ) {
+
       return (
         total +
         item.price *
@@ -1009,8 +1264,13 @@ function getCartTotal() {
 // ============================================================
 
 function getCartCount() {
+
   return cart.reduce(
-    function (total, item) {
+    function (
+      total,
+      item
+    ) {
+
       return (
         total +
         item.quantity
@@ -1026,25 +1286,30 @@ function getCartCount() {
 // ============================================================
 
 function updateCart() {
+
   const itemsBox =
     document.getElementById(
       "cart-items"
     );
+
 
   const countBox =
     document.getElementById(
       "cart-count"
     );
 
+
   const totalBox =
     document.getElementById(
       "cart-total"
     );
 
+
   const barTotal =
     document.getElementById(
       "cart-bar-total"
     );
+
 
   const checkoutButton =
     document.getElementById(
@@ -1057,12 +1322,14 @@ function updateCart() {
 
 
   if (countBox) {
+
     countBox.textContent =
       getCartCount();
   }
 
 
   if (totalBox) {
+
     totalBox.textContent =
       formatCurrency(
         total
@@ -1071,6 +1338,7 @@ function updateCart() {
 
 
   if (barTotal) {
+
     barTotal.textContent =
       formatCurrency(
         total
@@ -1079,37 +1347,47 @@ function updateCart() {
 
 
   if (checkoutButton) {
+
     checkoutButton.disabled =
       cart.length === 0;
   }
 
 
   if (!itemsBox) {
+
     updateCheckoutSummary();
+
     return;
   }
 
 
-  itemsBox.innerHTML = "";
+  itemsBox.innerHTML =
+    "";
 
 
   if (!cart.length) {
+
     const empty =
       document.createElement(
         "p"
       );
 
+
     empty.className =
       "empty-cart-message";
 
+
     empty.textContent =
       "Your cart is empty.";
+
 
     itemsBox.appendChild(
       empty
     );
 
+
     updateCheckoutSummary();
+
 
     return;
   }
@@ -1121,19 +1399,26 @@ function updateCart() {
 
   cart.forEach(
     function (item) {
+
       const row =
         document.createElement(
           "div"
         );
 
+
       row.className =
         "cart-item";
 
+
+      // ------------------------------------------------------
+      // DETAILS
+      // ------------------------------------------------------
 
       const details =
         document.createElement(
           "div"
         );
+
 
       details.className =
         "cart-item-details";
@@ -1144,8 +1429,10 @@ function updateCart() {
           "div"
         );
 
+
       name.className =
         "cart-item-name";
+
 
       name.textContent =
         item.productName;
@@ -1156,8 +1443,10 @@ function updateCart() {
           "div"
         );
 
+
       number.className =
         "cart-item-product-number";
+
 
       number.textContent =
         item.productNo;
@@ -1168,8 +1457,10 @@ function updateCart() {
           "div"
         );
 
+
       price.className =
         "cart-item-price";
+
 
       price.textContent =
         formatCurrency(
@@ -1182,19 +1473,26 @@ function updateCart() {
         name
       );
 
+
       details.appendChild(
         number
       );
+
 
       details.appendChild(
         price
       );
 
 
+      // ------------------------------------------------------
+      // QUANTITY CONTROLS
+      // ------------------------------------------------------
+
       const controls =
         document.createElement(
           "div"
         );
+
 
       controls.className =
         "cart-item-controls";
@@ -1205,13 +1503,18 @@ function updateCart() {
           "button"
         );
 
-      minus.type = "button";
+
+      minus.type =
+        "button";
+
 
       minus.textContent =
         "−";
 
+
       minus.onclick =
         function () {
+
           decreaseQuantity(
             item.productNo
           );
@@ -1223,8 +1526,10 @@ function updateCart() {
           "span"
         );
 
+
       quantity.className =
         "cart-item-quantity";
+
 
       quantity.textContent =
         item.quantity;
@@ -1235,13 +1540,18 @@ function updateCart() {
           "button"
         );
 
-      plus.type = "button";
+
+      plus.type =
+        "button";
+
 
       plus.textContent =
         "+";
 
+
       plus.onclick =
         function () {
+
           increaseQuantity(
             item.productNo
           );
@@ -1253,16 +1563,22 @@ function updateCart() {
           "button"
         );
 
-      remove.type = "button";
+
+      remove.type =
+        "button";
+
 
       remove.className =
         "remove-cart-item";
 
+
       remove.textContent =
         "Remove";
 
+
       remove.onclick =
         function () {
+
           removeFromCart(
             item.productNo
           );
@@ -1273,13 +1589,16 @@ function updateCart() {
         minus
       );
 
+
       controls.appendChild(
         quantity
       );
 
+
       controls.appendChild(
         plus
       );
+
 
       controls.appendChild(
         remove
@@ -1289,6 +1608,7 @@ function updateCart() {
       row.appendChild(
         details
       );
+
 
       row.appendChild(
         controls
@@ -1316,10 +1636,12 @@ function updateCart() {
 // ============================================================
 
 function updateCheckoutSummary() {
+
   const box =
     document.getElementById(
       "checkout-items"
     );
+
 
   const total =
     document.getElementById(
@@ -1328,6 +1650,7 @@ function updateCheckoutSummary() {
 
 
   if (total) {
+
     total.textContent =
       formatCurrency(
         getCartTotal()
@@ -1335,10 +1658,13 @@ function updateCheckoutSummary() {
   }
 
 
-  if (!box) return;
+  if (!box) {
+    return;
+  }
 
 
-  box.innerHTML = "";
+  box.innerHTML =
+    "";
 
 
   const fragment =
@@ -1347,10 +1673,12 @@ function updateCheckoutSummary() {
 
   cart.forEach(
     function (item) {
+
       const row =
         document.createElement(
           "div"
         );
+
 
       row.className =
         "checkout-summary-item";
@@ -1360,6 +1688,7 @@ function updateCheckoutSummary() {
         document.createElement(
           "span"
         );
+
 
       name.textContent =
         item.productName +
@@ -1372,6 +1701,7 @@ function updateCheckoutSummary() {
           "strong"
         );
 
+
       price.textContent =
         formatCurrency(
           item.price *
@@ -1382,6 +1712,7 @@ function updateCheckoutSummary() {
       row.appendChild(
         name
       );
+
 
       row.appendChild(
         price
@@ -1406,10 +1737,12 @@ function updateCheckoutSummary() {
 // ============================================================
 
 function openCart() {
+
   const popup =
     document.getElementById(
       "cart-popup"
     );
+
 
   const overlay =
     document.getElementById(
@@ -1418,6 +1751,7 @@ function openCart() {
 
 
   if (popup) {
+
     popup.classList.add(
       "open"
     );
@@ -1425,6 +1759,7 @@ function openCart() {
 
 
   if (overlay) {
+
     overlay.classList.add(
       "show"
     );
@@ -1433,10 +1768,12 @@ function openCart() {
 
 
 function closeCart() {
+
   const popup =
     document.getElementById(
       "cart-popup"
     );
+
 
   const overlay =
     document.getElementById(
@@ -1445,6 +1782,7 @@ function closeCart() {
 
 
   if (popup) {
+
     popup.classList.remove(
       "open"
     );
@@ -1452,6 +1790,7 @@ function closeCart() {
 
 
   if (overlay) {
+
     overlay.classList.remove(
       "show"
     );
@@ -1464,16 +1803,20 @@ function closeCart() {
 // ============================================================
 
 function showCheckout() {
+
   if (!cart.length) {
+
     alert(
       "Your cart is empty."
     );
+
 
     return;
   }
 
 
   closeCart();
+
 
   updateCheckoutSummary();
 
@@ -1485,6 +1828,7 @@ function showCheckout() {
 
 
   if (checkout) {
+
     checkout.style.display =
       "block";
   }
@@ -1492,9 +1836,11 @@ function showCheckout() {
 
 
 function closeCheckout() {
+
   if (
     orderSubmissionInProgress
   ) {
+
     return;
   }
 
@@ -1506,6 +1852,7 @@ function closeCheckout() {
 
 
   if (checkout) {
+
     checkout.style.display =
       "none";
   }
@@ -1513,13 +1860,15 @@ function closeCheckout() {
 
 
 // ============================================================
-// PRODUCT DATA
+// CREATE PRODUCT DATA
 // ============================================================
 
 function createProductData() {
+
   return cart
     .map(
       function (item) {
+
         return (
           item.productNo +
           ":" +
@@ -1532,10 +1881,11 @@ function createProductData() {
 
 
 // ============================================================
-// VALIDATE CHECKOUT
+// CUSTOMER DATA
 // ============================================================
 
 function getCustomerData() {
+
   const name =
     document
       .getElementById(
@@ -1588,77 +1938,101 @@ function getCustomerData() {
 
 
   if (!name) {
+
     alert(
       "Please enter your name."
     );
+
 
     return null;
   }
 
 
-  if (mobile.length !== 10) {
+  if (
+    mobile.length !== 10
+  ) {
+
     alert(
       "Please enter a valid 10-digit mobile number."
     );
+
 
     return null;
   }
 
 
   if (!address) {
+
     alert(
       "Please enter your delivery address."
     );
+
 
     return null;
   }
 
 
   if (!city) {
+
     alert(
       "Please enter your city."
     );
+
 
     return null;
   }
 
 
-  if (pincode.length !== 6) {
+  if (
+    pincode.length !== 6
+  ) {
+
     alert(
       "Please enter a valid 6-digit pincode."
     );
+
 
     return null;
   }
 
 
   if (!cart.length) {
+
     alert(
       "Your cart is empty."
     );
+
 
     return null;
   }
 
 
   return {
+
     name: name,
+
     mobile: mobile,
+
     address: address,
+
     city: city,
+
     pincode: pincode
   };
 }
 
 
 // ============================================================
-// FINAL PLACE ORDER
+// PLACE ORDER
+// SAME-TAB CONFIRMATION VERSION
 // ============================================================
 
 async function placeOrder() {
+
   if (
     orderSubmissionInProgress
   ) {
+
     return;
   }
 
@@ -1668,6 +2042,7 @@ async function placeOrder() {
 
 
   if (!customer) {
+
     return;
   }
 
@@ -1683,7 +2058,10 @@ async function placeOrder() {
 
 
   if (button) {
-    button.disabled = true;
+
+    button.disabled =
+      true;
+
 
     button.textContent =
       "Checking Stock...";
@@ -1693,12 +2071,10 @@ async function placeOrder() {
   try {
 
     // --------------------------------------------------------
-    // IMPORTANT:
-    // Always obtain fresh inventory immediately
-    // before order submission.
+    // FRESH STOCK CHECK
     //
-    // This stock verification is intentionally
-    // NOT removed for performance optimization.
+    // We intentionally keep this.
+    // The customer may have had the page open for some time.
     // --------------------------------------------------------
 
     const latest =
@@ -1711,12 +2087,12 @@ async function placeOrder() {
       );
 
 
-    // Also refresh categories if returned.
     if (
       Array.isArray(
         latest.categories
       )
     ) {
+
       categories =
         normalizeCategories(
           latest.categories
@@ -1724,11 +2100,16 @@ async function placeOrder() {
     }
 
 
+    // --------------------------------------------------------
+    // VERIFY EVERY CART ITEM
+    // --------------------------------------------------------
+
     for (
       let i = 0;
       i < cart.length;
       i++
     ) {
+
       const item =
         cart[i];
 
@@ -1740,6 +2121,7 @@ async function placeOrder() {
 
 
       if (!product) {
+
         throw new Error(
           item.productName +
           " is no longer available."
@@ -1750,6 +2132,7 @@ async function placeOrder() {
       if (
         product.availableQty <= 0
       ) {
+
         throw new Error(
           product.productName +
           " is out of stock."
@@ -1761,6 +2144,7 @@ async function placeOrder() {
         item.quantity >
         product.availableQty
       ) {
+
         throw new Error(
           "Only " +
           product.availableQty +
@@ -1771,7 +2155,8 @@ async function placeOrder() {
       }
 
 
-      // Use latest server price.
+      // Always use latest server price.
+
       item.price =
         product.offerPrice;
     }
@@ -1781,7 +2166,10 @@ async function placeOrder() {
 
 
     // --------------------------------------------------------
-    // UNIQUE CHECKOUT SUBMISSION ID
+    // UNIQUE SUBMISSION ID
+    //
+    // This continues to support the duplicate-order
+    // protection in Code.gs.
     // --------------------------------------------------------
 
     const submissionId =
@@ -1797,6 +2185,7 @@ async function placeOrder() {
 
 
     const orderData = {
+
       submissionId:
         submissionId,
 
@@ -1821,10 +2210,7 @@ async function placeOrder() {
 
 
     // --------------------------------------------------------
-    // NORMAL HTML FORM SUBMISSION
-    //
-    // Apps Script itself displays the confirmed
-    // order result in a new browser tab.
+    // CREATE NORMAL FORM
     // --------------------------------------------------------
 
     const form =
@@ -1841,13 +2227,32 @@ async function placeOrder() {
       googleScriptURL;
 
 
+    // ========================================================
+    // IMPORTANT CHANGE
+    //
+    // OLD VERSION:
+    //
+    // form.target = "_blank";
+    //
+    // That opened Apps Script in a new tab.
+    //
+    // NEW VERSION:
+    //
+    // _self loads the confirmed Apps Script result
+    // in the CURRENT browser tab.
+    // ========================================================
+
     form.target =
-      "_blank";
+      "_self";
 
 
     form.style.display =
       "none";
 
+
+    // --------------------------------------------------------
+    // ACTION
+    // --------------------------------------------------------
 
     const action =
       document.createElement(
@@ -1858,12 +2263,18 @@ async function placeOrder() {
     action.type =
       "hidden";
 
+
     action.name =
       "action";
+
 
     action.value =
       "placeOrder";
 
+
+    // --------------------------------------------------------
+    // ORDER DATA
+    // --------------------------------------------------------
 
     const data =
       document.createElement(
@@ -1874,8 +2285,10 @@ async function placeOrder() {
     data.type =
       "hidden";
 
+
     data.name =
       "orderData";
+
 
     data.value =
       JSON.stringify(
@@ -1887,6 +2300,7 @@ async function placeOrder() {
       action
     );
 
+
     form.appendChild(
       data
     );
@@ -1897,35 +2311,36 @@ async function placeOrder() {
     );
 
 
-    form.submit();
-
-
-    form.remove();
-
-
     // --------------------------------------------------------
-    // We do NOT claim that the order succeeded here.
-    //
-    // Only Apps Script's new-tab result page confirms
-    // that the server actually created the order.
+    // CHANGE BUTTON WHILE SERVER PROCESSES
     // --------------------------------------------------------
 
     if (button) {
+
       button.textContent =
-        "Order Submitted - Check New Tab";
+        "Placing Order...";
     }
 
 
-    const message =
-      document.getElementById(
-        "order-message"
-      );
+    // --------------------------------------------------------
+    // SUBMIT IN CURRENT TAB
+    //
+    // Apps Script now takes over this browser tab.
+    //
+    // Code.gs:
+    // 1. validates order
+    // 2. checks stock
+    // 3. creates order
+    // 4. updates inventory
+    // 5. displays confirmed order page
+    // 6. provides SEND ORDER ON WHATSAPP button
+    // --------------------------------------------------------
+
+    form.submit();
 
 
-    if (message) {
-      message.textContent =
-        "Please check the new tab for the confirmed order result. Do not press Place Order again.";
-    }
+    // Do not remove the form before navigation.
+    // Browser navigation will replace this page.
 
 
   } catch (error) {
@@ -1935,8 +2350,10 @@ async function placeOrder() {
 
 
     if (button) {
+
       button.disabled =
         false;
+
 
       button.textContent =
         "Place Order";
@@ -1956,10 +2373,12 @@ async function placeOrder() {
 // ============================================================
 
 function openCategoryMenu() {
+
   const menu =
     document.getElementById(
       "category-menu"
     );
+
 
   const overlay =
     document.getElementById(
@@ -1968,6 +2387,7 @@ function openCategoryMenu() {
 
 
   if (menu) {
+
     menu.classList.add(
       "open"
     );
@@ -1975,6 +2395,7 @@ function openCategoryMenu() {
 
 
   if (overlay) {
+
     overlay.classList.add(
       "show"
     );
@@ -1983,10 +2404,12 @@ function openCategoryMenu() {
 
 
 function closeCategoryMenu() {
+
   const menu =
     document.getElementById(
       "category-menu"
     );
+
 
   const overlay =
     document.getElementById(
@@ -1995,6 +2418,7 @@ function closeCategoryMenu() {
 
 
   if (menu) {
+
     menu.classList.remove(
       "open"
     );
@@ -2002,6 +2426,7 @@ function closeCategoryMenu() {
 
 
   if (overlay) {
+
     overlay.classList.remove(
       "show"
     );
@@ -2010,14 +2435,16 @@ function closeCategoryMenu() {
 
 
 // ============================================================
-// CUSTOMER DRAWER
+// CUSTOMER / CONTACT DRAWER
 // ============================================================
 
 function openCustomerMenu() {
+
   const menu =
     document.getElementById(
       "customer-menu"
     );
+
 
   const overlay =
     document.getElementById(
@@ -2026,6 +2453,7 @@ function openCustomerMenu() {
 
 
   if (menu) {
+
     menu.classList.add(
       "open"
     );
@@ -2033,6 +2461,7 @@ function openCustomerMenu() {
 
 
   if (overlay) {
+
     overlay.classList.add(
       "show"
     );
@@ -2041,10 +2470,12 @@ function openCustomerMenu() {
 
 
 function closeCustomerMenu() {
+
   const menu =
     document.getElementById(
       "customer-menu"
     );
+
 
   const overlay =
     document.getElementById(
@@ -2053,6 +2484,7 @@ function closeCustomerMenu() {
 
 
   if (menu) {
+
     menu.classList.remove(
       "open"
     );
@@ -2060,6 +2492,7 @@ function closeCustomerMenu() {
 
 
   if (overlay) {
+
     overlay.classList.remove(
       "show"
     );
@@ -2068,10 +2501,11 @@ function closeCustomerMenu() {
 
 
 // ============================================================
-// CONTACT
+// WHATSAPP
 // ============================================================
 
 function openBusinessWhatsApp() {
+
   window.open(
     "https://wa.me/" +
     businessWhatsApp +
@@ -2084,11 +2518,18 @@ function openBusinessWhatsApp() {
 }
 
 
+// ============================================================
+// INSTAGRAM
+// ============================================================
+
 function openInstagram() {
+
   if (!instagramURL) {
+
     alert(
       "Festive Cart Instagram page will be added soon."
     );
+
 
     return;
   }
@@ -2105,17 +2546,22 @@ function openInstagram() {
 // CURRENCY
 // ============================================================
 
-function formatCurrency(amount) {
+function formatCurrency(
+  amount
+) {
+
   return (
     "₹" +
-    (Number(amount) || 0)
-      .toLocaleString(
-        "en-IN",
-        {
-          maximumFractionDigits:
-            2
-        }
-      )
+    (
+      Number(amount) ||
+      0
+    ).toLocaleString(
+      "en-IN",
+      {
+        maximumFractionDigits:
+          2
+      }
+    )
   );
 }
 
@@ -2127,12 +2573,16 @@ function formatCurrency(amount) {
 document.addEventListener(
   "keydown",
   function (event) {
+
     if (
       event.key ===
       "Escape"
     ) {
+
       closeCategoryMenu();
+
       closeCustomerMenu();
+
       closeCart();
     }
   }
