@@ -1728,3 +1728,30 @@ button {
     animation-iteration-count: infinite !important;
   }
 }
+
+
+/* ============================================================
+   PRODUCT IMAGE SLIDER - CLEAN MOBILE-FRIENDLY CONTROLS
+   Arrows removed in JavaScript; compact dots retained.
+   ============================================================ */
+
+.product-image-dots {
+  bottom: 8px;
+  gap: 5px;
+  max-width: calc(100% - 40px);
+  padding: 4px 7px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+}
+
+.product-image-dot {
+  width: 6px;
+  height: 6px;
+  min-width: 6px;
+  min-height: 6px;
+}
+
+.product-image-dot.active {
+  transform: scale(1.25);
+}
