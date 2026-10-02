@@ -24,6 +24,39 @@
 
 
   <!-- ======================================================
+       CHRISTMAS SNOWFALL
+       Decorative only - does not block clicks or swipes
+       ====================================================== -->
+
+  <div
+    class="snowfall"
+    aria-hidden="true"
+  >
+
+    <span class="snowflake">❄</span>
+    <span class="snowflake">❅</span>
+    <span class="snowflake">❆</span>
+    <span class="snowflake">•</span>
+    <span class="snowflake">❄</span>
+    <span class="snowflake">•</span>
+    <span class="snowflake">❅</span>
+    <span class="snowflake">❆</span>
+    <span class="snowflake">•</span>
+    <span class="snowflake">❄</span>
+    <span class="snowflake">❅</span>
+    <span class="snowflake">•</span>
+    <span class="snowflake">❆</span>
+    <span class="snowflake">❄</span>
+    <span class="snowflake">•</span>
+    <span class="snowflake">❅</span>
+    <span class="snowflake">❆</span>
+    <span class="snowflake">•</span>
+
+  </div>
+
+
+
+  <!-- ======================================================
        HEADER
        ====================================================== -->
 
@@ -97,11 +130,6 @@
 
     </div>
 
-
-    <!--
-      Categories from the Festive Cart Products spreadsheet
-      will be inserted here automatically by script.js.
-    -->
 
     <div
       id="category-list"
@@ -250,11 +278,6 @@
       </h2>
 
 
-      <!--
-        script.js will show this while it is obtaining the
-        catalogue from Google Sheets.
-      -->
-
       <div
         id="products-loading"
         class="products-message"
@@ -263,21 +286,8 @@
       </div>
 
 
-
-      <!--
-        IMPORTANT:
-        All products from Festive Cart Products will be
-        generated inside this container.
-
-        The old hard-coded dummy product cards have been
-        removed.
-      -->
-
       <div id="product-list"></div>
 
-
-
-      <!-- SHOWN WHEN CATEGORY HAS NO PRODUCTS -->
 
       <div
         id="no-products"
@@ -287,9 +297,6 @@
         No products are available in this category.
       </div>
 
-
-
-      <!-- SHOWN IF PRODUCT CATALOGUE CANNOT LOAD -->
 
       <div
         id="products-error"
@@ -345,8 +352,6 @@
 
 
 
-    <!-- CART ITEMS -->
-
     <div id="cart-items">
 
       <p class="empty-cart-message">
@@ -356,8 +361,6 @@
     </div>
 
 
-
-    <!-- CART TOTAL -->
 
     <div class="cart-total-row">
 
@@ -372,8 +375,6 @@
     </div>
 
 
-
-    <!-- CHECKOUT BUTTON -->
 
     <button
       id="checkout-button"
@@ -429,8 +430,6 @@
 
 
 
-      <!-- CUSTOMER NAME -->
-
       <label for="customer-name">
         Customer Name
       </label>
@@ -443,8 +442,6 @@
       >
 
 
-
-      <!-- MOBILE NUMBER -->
 
       <label for="customer-mobile">
         Mobile Number
@@ -461,8 +458,6 @@
 
 
 
-      <!-- ADDRESS -->
-
       <label for="customer-address">
         Delivery Address
       </label>
@@ -476,8 +471,6 @@
 
 
 
-      <!-- CITY -->
-
       <label for="customer-city">
         City
       </label>
@@ -490,8 +483,6 @@
       >
 
 
-
-      <!-- PINCODE -->
 
       <label for="customer-pincode">
         Pincode
@@ -507,8 +498,6 @@
       >
 
 
-
-      <!-- CHECKOUT ORDER SUMMARY -->
 
       <div class="checkout-summary">
 
@@ -537,8 +526,6 @@
       </div>
 
 
-
-      <!-- PLACE ORDER -->
 
       <button
         id="place-order-button"
