@@ -1713,12 +1713,18 @@ button {
 
 
 /* ============================================================
-   ACCESSIBILITY - REDUCED MOTION
+   MOBILE / REDUCED MOTION - KEEP CHRISTMAS SNOW VISIBLE
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
 
   .snowfall {
-    display: none;
+    display: block !important;
+  }
+
+  .snowflake {
+    animation-name: festive-snowfall !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
   }
 }
