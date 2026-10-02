@@ -1586,7 +1586,7 @@ button {
 @media (min-width: 481px) {
 
   .page-container {
-    background: rgba(247, 247, 247, 0.94);
+    background: rgba(247, 247, 247, 0.75);
 
     box-shadow: 0 0 18px rgba(0, 0, 0, 0.05);
   }
