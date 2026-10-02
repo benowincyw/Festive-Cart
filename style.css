@@ -1,6 +1,6 @@
 /* ============================================================
    FESTIVE CART - COMPLETE STYLE.CSS
-   MULTIPLE PRODUCT IMAGE SLIDER VERSION
+   CHRISTMAS BACKGROUND + PRODUCT SLIDER + SNOWFALL
    ============================================================ */
 
 
@@ -44,13 +44,229 @@ button {
 
 
 /* ============================================================
+   CHRISTMAS SNOWFALL
+   ============================================================ */
+
+.snowfall {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  z-index: 650;
+
+  pointer-events: none;
+
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+
+/* INDIVIDUAL SNOWFLAKE */
+
+.snowflake {
+  position: absolute;
+
+  top: -12vh;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.35),
+    0 0 8px rgba(255, 255, 255, 0.8);
+
+  opacity: 0.9;
+
+  line-height: 1;
+
+  pointer-events: none;
+
+  will-change: transform;
+
+  animation-name: festive-snowfall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+
+/* DIFFERENT POSITIONS, SIZES AND SPEEDS */
+
+.snowflake:nth-child(1) {
+  left: 3%;
+  font-size: 18px;
+  animation-duration: 10s;
+  animation-delay: -2s;
+}
+
+.snowflake:nth-child(2) {
+  left: 9%;
+  font-size: 25px;
+  animation-duration: 13s;
+  animation-delay: -8s;
+}
+
+.snowflake:nth-child(3) {
+  left: 15%;
+  font-size: 14px;
+  animation-duration: 9s;
+  animation-delay: -5s;
+}
+
+.snowflake:nth-child(4) {
+  left: 21%;
+  font-size: 19px;
+  animation-duration: 12s;
+  animation-delay: -9s;
+}
+
+.snowflake:nth-child(5) {
+  left: 27%;
+  font-size: 27px;
+  animation-duration: 15s;
+  animation-delay: -4s;
+}
+
+.snowflake:nth-child(6) {
+  left: 33%;
+  font-size: 16px;
+  animation-duration: 10s;
+  animation-delay: -7s;
+}
+
+.snowflake:nth-child(7) {
+  left: 39%;
+  font-size: 22px;
+  animation-duration: 14s;
+  animation-delay: -11s;
+}
+
+.snowflake:nth-child(8) {
+  left: 45%;
+  font-size: 15px;
+  animation-duration: 11s;
+  animation-delay: -3s;
+}
+
+.snowflake:nth-child(9) {
+  left: 51%;
+  font-size: 20px;
+  animation-duration: 13s;
+  animation-delay: -10s;
+}
+
+.snowflake:nth-child(10) {
+  left: 57%;
+  font-size: 26px;
+  animation-duration: 16s;
+  animation-delay: -6s;
+}
+
+.snowflake:nth-child(11) {
+  left: 63%;
+  font-size: 17px;
+  animation-duration: 10s;
+  animation-delay: -1s;
+}
+
+.snowflake:nth-child(12) {
+  left: 69%;
+  font-size: 21px;
+  animation-duration: 12s;
+  animation-delay: -8s;
+}
+
+.snowflake:nth-child(13) {
+  left: 75%;
+  font-size: 14px;
+  animation-duration: 9s;
+  animation-delay: -4s;
+}
+
+.snowflake:nth-child(14) {
+  left: 81%;
+  font-size: 25px;
+  animation-duration: 15s;
+  animation-delay: -12s;
+}
+
+.snowflake:nth-child(15) {
+  left: 87%;
+  font-size: 18px;
+  animation-duration: 11s;
+  animation-delay: -5s;
+}
+
+.snowflake:nth-child(16) {
+  left: 92%;
+  font-size: 23px;
+  animation-duration: 14s;
+  animation-delay: -9s;
+}
+
+.snowflake:nth-child(17) {
+  left: 96%;
+  font-size: 16px;
+  animation-duration: 10s;
+  animation-delay: -6s;
+}
+
+.snowflake:nth-child(18) {
+  left: 48%;
+  font-size: 13px;
+  animation-duration: 17s;
+  animation-delay: -13s;
+}
+
+
+/* SNOW MOVEMENT */
+
+@keyframes festive-snowfall {
+
+  0% {
+    transform:
+      translate3d(0, -10vh, 0)
+      rotate(0deg);
+
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.9;
+  }
+
+  50% {
+    transform:
+      translate3d(25px, 55vh, 0)
+      rotate(180deg);
+  }
+
+  90% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform:
+      translate3d(-20px, 115vh, 0)
+      rotate(360deg);
+
+    opacity: 0;
+  }
+}
+
+
+/* ============================================================
    HEADER
    ============================================================ */
 
 .top-header {
   position: sticky;
   top: 0;
-  z-index: 500;
+  z-index: 700;
 
   width: 100%;
   max-width: 480px;
@@ -228,12 +444,6 @@ button {
   background: #ffffff;
 }
 
-
-/*
-   JavaScript adds this class automatically
-   when a product contains more than one image.
-*/
-
 .product-image-container.has-image-slider {
   position: relative;
 
@@ -242,7 +452,6 @@ button {
   user-select: none;
   -webkit-user-select: none;
 }
-
 
 .product-image {
   display: block;
@@ -262,7 +471,6 @@ button {
   -webkit-user-drag: none;
 }
 
-
 .image-placeholder {
   width: 100%;
   min-height: 220px;
@@ -279,10 +487,7 @@ button {
 
 
 /* ============================================================
-   PRODUCT IMAGE SLIDER - LEFT AND RIGHT ARROWS
-
-   IMPORTANT:
-   These names exactly match the current script.js
+   PRODUCT IMAGE SLIDER - ARROWS
    ============================================================ */
 
 .product-image-arrow {
@@ -322,25 +527,17 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-
-/* LEFT ARROW */
-
 .product-image-arrow-left {
   left: 10px;
 }
-
-
-/* RIGHT ARROW */
 
 .product-image-arrow-right {
   right: 10px;
 }
 
-
 .product-image-arrow:hover {
   background: rgba(0, 0, 0, 0.72);
 }
-
 
 .product-image-arrow:active {
   transform: translateY(-50%) scale(0.93);
@@ -378,7 +575,6 @@ button {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
-
 .product-image-dot {
   flex: 0 0 auto;
 
@@ -407,9 +603,6 @@ button {
 
   -webkit-tap-highlight-color: transparent;
 }
-
-
-/* CURRENT IMAGE DOT */
 
 .product-image-dot.active {
   background: #c62828;
@@ -1445,9 +1638,7 @@ button {
   }
 
 
-  /* ==========================================================
-     SMALL MOBILE SLIDER
-     ========================================================== */
+  /* SMALL MOBILE SLIDER */
 
   .product-image-arrow {
     width: 38px;
@@ -1481,9 +1672,7 @@ button {
   }
 
 
-  /* ==========================================================
-     SMALL MOBILE CART
-     ========================================================== */
+  /* SMALL MOBILE CART */
 
   .cart-item {
     gap: 7px;
@@ -1519,5 +1708,17 @@ button {
     min-height: 29px;
 
     padding: 2px 5px;
+  }
+}
+
+
+/* ============================================================
+   ACCESSIBILITY - REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .snowfall {
+    display: none;
   }
 }
