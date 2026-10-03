@@ -4,10 +4,10 @@
 // ============================================================
 
 const businessWhatsApp =
-  "919500417696";
+  "918015337696";
 
 const customerSupportNumber =
-  "9500417696";
+  "8015337696";
 
 const instagramURL = "https://www.instagram.com/festivecart?stkn=N3N4Ynd6YXphdDI0";
 
