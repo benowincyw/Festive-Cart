@@ -9,7 +9,7 @@ const businessWhatsApp =
 const customerSupportNumber =
   "9500417696";
 
-const instagramURL = "";
+const instagramURL = "https://www.instagram.com/festivecart?stkn=N3N4Ynd6YXphdDI0";
 
 const googleScriptURL =
   "https://script.google.com/macros/s/AKfycbwtXCf4FvtaCEoKQH9PvXfwWc1Xa1UNLa_dcK5I1c11IJiolxfuybQCBqZ2OHtSy4ufDA/exec";
