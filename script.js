@@ -1,1941 +1,1275 @@
 // ============================================================
-
-
-
-// FESTIVE CART - COMPLETE CODE.GS
-
-
-
-// INVENTORY + PAYMENT + WHATSAPP FIX
-
-
-
+// FESTIVE CART - SCRIPT.JS
+// MULTIPLE PRODUCT IMAGE SLIDER - SWIPE + DOTS VERSION
 // ============================================================
 
-
-
-// ============================================================
-
-
-
-// SETTINGS
-
-
-
-// ============================================================
-
-
-
-const SPREADSHEET_ID =
-
-
-
-  "1ZbxHNvBjgglFY4kQe48921gD4Wtk0ylJnfj3K7mhwp8";
-
-
-
-const SHEET_NAME =
-
-
-
-  "Sheet1";
-
-
-
-const PRODUCTS_SPREADSHEET_ID =
-
-
-
-  "1VraToG9-EcsUCa4yHpGZyLeJhlT2IlbO7_6rxD1QPRo";
-
-
-
-const UPI_ID =
-
-
-
-  "benowincyw-1@okaxis";
-
-
-
-const BUSINESS_NAME =
-
-
-
-  "Festive Cart";
-
-
-
-const BUSINESS_WHATSAPP =
-
-
-
+const businessWhatsApp =
   "918015337696";
 
+const customerSupportNumber =
+  "8015337696";
 
+const instagramURL = "https://www.instagram.com/festivecart?stkn=N3N4Ynd6YXphdDI0";
 
-const WEB_APP_URL =
-
-
-
+const googleScriptURL =
   "https://script.google.com/macros/s/AKfycbwtXCf4FvtaCEoKQH9PvXfwWc1Xa1UNLa_dcK5I1c11IJiolxfuybQCBqZ2OHtSy4ufDA/exec";
 
 
+let cart = [];
 
-// Public product catalogue cache duration.
+let products = [];
 
-const CATALOGUE_CACHE_SECONDS = 60;
+let currentCategory = "all";
 
+let catalogueLoaded = false;
 
-
-// ============================================================
-
-
-
-// ORDERS SHEET
-
+let orderSubmissionInProgress = false;
 
 
 // ============================================================
+// START
+// ============================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+    updateCart();
+    loadProducts();
+  }
+);
 
 
+// ============================================================
+// PRODUCTS
+// ============================================================
 
-function getOrderSheet() {
-
-
-
-  const spreadsheet =
-
-
-
-    SpreadsheetApp.openById(
-
-
-
-      SPREADSHEET_ID
-
-
-
+async function loadProducts() {
+  const loading =
+    document.getElementById(
+      "products-loading"
     );
 
-
-
-  const sheet =
-
-
-
-    spreadsheet.getSheetByName(
-
-
-
-      SHEET_NAME
-
-
-
+  const errorBox =
+    document.getElementById(
+      "products-error"
     );
 
-
-
-  if (!sheet) {
-
-
-
-    throw new Error(
-
-
-
-      "Orders sheet not found."
-
-
-
+  const noProducts =
+    document.getElementById(
+      "no-products"
     );
 
-
-
+  if (loading) {
+    loading.style.display = "block";
   }
 
-
-
-  return sheet;
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// PRODUCTS SPREADSHEET
-
-
-
-// ============================================================
-
-
-
-function getProductsSpreadsheet() {
-
-
-
-  return SpreadsheetApp.openById(
-
-
-
-    PRODUCTS_SPREADSHEET_ID
-
-
-
-  );
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// HELPERS
-
-
-
-// ============================================================
-
-
-
-function normalizeProductNo(value) {
-
-
-
-  return String(value || "")
-
-
-
-    .trim()
-
-
-
-    .toUpperCase();
-
-
-
-}
-
-
-
-function escapeHtml(value) {
-
-
-
-  return String(value || "")
-
-
-
-    .replace(
-
-
-
-      /&/g,
-
-
-
-      "&amp;"
-
-
-
-    )
-
-
-
-    .replace(
-
-
-
-      /</g,
-
-
-
-      "&lt;"
-
-
-
-    )
-
-
-
-    .replace(
-
-
-
-      />/g,
-
-
-
-      "&gt;"
-
-
-
-    )
-
-
-
-    .replace(
-
-
-
-      /"/g,
-
-
-
-      "&quot;"
-
-
-
-    )
-
-
-
-    .replace(
-
-
-
-      /'/g,
-
-
-
-      "&#039;"
-
-
-
-    );
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// DRIVE IMAGE LINK
-
-
-
-// ============================================================
-
-
-
-function convertDriveImageLink(link) {
-
-
-
-  link =
-
-
-
-    String(link || "").trim();
-
-
-
-  if (!link) {
-
-
-
-    return "";
-
-
-
+  if (errorBox) {
+    errorBox.style.display = "none";
   }
 
-
-
-  let match =
-
-
-
-    link.match(
-
-
-
-      /\/file\/d\/([a-zA-Z0-9_-]+)/
-
-
-
-    );
-
-
-
-  if (!match) {
-
-
-
-    match =
-
-
-
-      link.match(
-
-
-
-        /[?&]id=([a-zA-Z0-9_-]+)/
-
-
-
-      );
-
-
-
+  if (noProducts) {
+    noProducts.style.display = "none";
   }
-
-
-
-  if (!match) {
-
-
-
-    return link;
-
-
-
-  }
-
-
-
-  return (
-
-
-
-    "https://drive.google.com/thumbnail?id=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      match[1]
-
-
-
-    ) +
-
-
-
-    "&sz=w600"
-
-
-
-  );
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// MULTIPLE PRODUCT IMAGE LINKS
-
-
-
-// One image link per line in Column B
-
-
-
-// ============================================================
-
-
-
-function parseProductImageLinks(value) {
-
-
-
-  return String(value || "")
-
-
-
-    .split(/\r?\n/)
-
-
-
-    .map(function (link) {
-
-
-
-      return String(link || "").trim();
-
-
-
-    })
-
-
-
-    .filter(function (link) {
-
-
-
-      return link !== "";
-
-
-
-    })
-
-
-
-    .map(function (link) {
-
-
-
-      return convertDriveImageLink(link);
-
-
-
-    });
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// PRODUCT CATALOGUE
-
-
-
-// ============================================================
-
-
-
-function getProductCatalogue() {
-
-
-
-  const spreadsheet =
-
-
-
-    getProductsSpreadsheet();
-
-
-
-  const products = [];
-
-
-
-  spreadsheet
-
-
-
-    .getSheets()
-
-
-
-    .forEach(function (sheet) {
-
-
-
-      const lastRow =
-
-
-
-        sheet.getLastRow();
-
-
-
-      if (lastRow < 2) {
-
-
-
-        return;
-
-
-
-      }
-
-
-
-      // B:K
-
-
-
-      const rows =
-
-
-
-        sheet
-
-
-
-          .getRange(
-
-
-
-            2,
-
-
-
-            2,
-
-
-
-            lastRow - 1,
-
-
-
-            10
-
-
-
-          )
-
-
-
-          .getValues();
-
-
-
-      rows.forEach(
-
-
-
-        function (row, index) {
-
-
-
-          const imageLinks =
-
-            parseProductImageLinks(
-
-              row[0]
-
-            );
-
-
-
-          const productNo =
-
-
-
-            normalizeProductNo(
-
-
-
-              row[1]
-
-
-
-            );
-
-
-
-          const productName =
-
-
-
-            String(
-
-
-
-              row[2] || ""
-
-
-
-            ).trim();
-
-
-
-          const description =
-
-
-
-            String(
-
-
-
-              row[3] || ""
-
-
-
-            ).trim();
-
-
-
-          const actualPrice =
-
-
-
-            Number(
-
-
-
-              row[4]
-
-
-
-            ) || 0;
-
-
-
-          const offerPrice =
-
-
-
-            Number(
-
-
-
-              row[5]
-
-
-
-            ) || 0;
-
-
-
-          const stockQuantity =
-
-
-
-            Number(
-
-
-
-              row[6]
-
-
-
-            ) || 0;
-
-
-
-          const orderedQty =
-
-
-
-            Number(
-
-
-
-              row[7]
-
-
-
-            ) || 0;
-
-
-
-          const availableQty =
-
-
-
-            Math.max(
-
-
-
-              0,
-
-
-
-              Number(
-
-
-
-                row[8]
-
-
-
-              ) || 0
-
-
-
-            );
-
-
-
-          const stockStatus =
-
-
-
-            String(
-
-
-
-              row[9] || ""
-
-
-
-            )
-
-
-
-              .trim()
-
-
-
-              .toUpperCase();
-
-
-
-          if (
-
-
-
-            !productNo ||
-
-
-
-            !productName
-
-
-
-          ) {
-
-
-
-            return;
-
-
-
-          }
-
-
-
-          products.push({
-
-
-
-            category:
-
-
-
-              sheet.getName(),
-
-
-
-            sheetName:
-
-
-
-              sheet.getName(),
-
-
-
-            row:
-
-
-
-              index + 2,
-
-
-
-            imageURL:
-
-              imageLinks.length > 0
-
-                ? imageLinks[0]
-
-                : "",
-
-            imageURLs:
-
-              imageLinks,
-
-
-
-            productNo:
-
-
-
-              productNo,
-
-
-
-            productName:
-
-
-
-              productName,
-
-
-
-            description:
-
-
-
-              description,
-
-
-
-            actualPrice:
-
-
-
-              actualPrice,
-
-
-
-            offerPrice:
-
-
-
-              offerPrice,
-
-
-
-            stockQuantity:
-
-
-
-              stockQuantity,
-
-
-
-            orderedQty:
-
-
-
-              orderedQty,
-
-
-
-            availableQty:
-
-
-
-              availableQty,
-
-
-
-            stockStatus:
-
-
-
-              stockStatus
-
-
-
-          });
-
-
-
-        }
-
-
-
-      );
-
-
-
-    });
-
-
-
-  return products;
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// PRODUCT MAP
-
-
-
-// ============================================================
-
-
-
-function getProductMap() {
-
-
-
-  const map = {};
-
-
-
-  getProductCatalogue()
-
-
-
-    .forEach(function (product) {
-
-
-
-      if (
-
-
-
-        map[
-
-
-
-          product.productNo
-
-
-
-        ]
-
-
-
-      ) {
-
-
-
-        throw new Error(
-
-
-
-          "Duplicate Product No. found: " +
-
-
-
-          product.productNo
-
-
-
-        );
-
-
-
-      }
-
-
-
-      map[
-
-
-
-        product.productNo
-
-
-
-      ] = product;
-
-
-
-    });
-
-
-
-  return map;
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// PUBLIC PRODUCT RESPONSE
-
-
-
-// ============================================================
-
-
-
-function createCatalogueResponse() {
 
   try {
+    const data =
+      await fetchLatestCatalogue();
 
-    const cache =
+    products =
+      normalizeProducts(
+        data.products
+      );
 
-      CacheService.getScriptCache();
+    catalogueLoaded = true;
 
-    const cacheKey =
-
-      "FESTIVE_CART_PUBLIC_CATALOGUE_V1";
-
-    const cachedJSON =
-
-      cache.get(cacheKey);
-
-    // If a recent catalogue is already cached, return it
-    // without opening and reading the Products spreadsheet again.
-
-    if (cachedJSON) {
-
-      return ContentService
-
-        .createTextOutput(cachedJSON)
-
-        .setMimeType(
-
-          ContentService.MimeType.JSON
-
-        );
-
+    if (loading) {
+      loading.style.display = "none";
     }
 
-    const categories =
-
-      getProductsSpreadsheet()
-
-        .getSheets()
-
-        .map(function (sheet) {
-
-          return sheet.getName();
-
-        });
-
-    const products =
-
-      getProductCatalogue()
-
-        .map(function (product) {
-
-          return {
-
-            category:
-
-              product.category,
-
-            productNo:
-
-              product.productNo,
-
-            productName:
-
-              product.productName,
-
-            description:
-
-              product.description,
-
-            actualPrice:
-
-              product.actualPrice,
-
-            offerPrice:
-
-              product.offerPrice,
-
-            availableQty:
-
-              product.availableQty,
-
-            stockStatus:
-
-              product.availableQty > 0
-
-                ? "IN STOCK"
-
-                : "OUT OF STOCK",
-
-            imageURL:
-
-              product.imageURL,
-
-            imageURLs:
-
-              product.imageURLs
-
-          };
-
-        });
-
-    const responseJSON =
-
-      JSON.stringify({
-
-        success: true,
-
-        categories:
-
-          categories,
-
-        products:
-
-          products
-
-      });
-
-    // Keep the public catalogue for 60 seconds. Checkout still
-    // performs its own live inventory verification on the server.
-
-    cache.put(
-
-      cacheKey,
-
-      responseJSON,
-
-      CATALOGUE_CACHE_SECONDS
-
-    );
-
-    return ContentService
-
-      .createTextOutput(responseJSON)
-
-      .setMimeType(
-
-        ContentService.MimeType.JSON
-
-      );
+    createCategoryMenu();
+    renderProducts();
 
   } catch (error) {
+    console.error(error);
 
-    return ContentService
+    catalogueLoaded = false;
 
-      .createTextOutput(
+    if (loading) {
+      loading.style.display = "none";
+    }
 
-        JSON.stringify({
-
-          success: false,
-
-          error:
-
-            String(
-
-              error.message ||
-
-              error
-
-            ),
-
-          categories: [],
-
-          products: []
-
-        })
-
-      )
-
-      .setMimeType(
-
-        ContentService.MimeType.JSON
-
-      );
-
+    if (errorBox) {
+      errorBox.style.display = "block";
+    }
   }
-
 }
 
 
-
-// ============================================================
-
-
-
-// PARSE PRODUCT DATA
-
-
-
-// Example: WR001:2|WR002:1
-
-
-
-// ============================================================
-
-
-
-function parseProductData(text) {
-
-
-
-  text =
-
-
-
-    String(text || "").trim();
-
-
-
-  if (!text) {
-
-
-
-    throw new Error(
-
-
-
-      "No products were supplied."
-
-
-
+async function fetchLatestCatalogue() {
+  const response =
+    await fetch(
+      googleScriptURL +
+      "?action=products"
     );
 
-
-
+  if (!response.ok) {
+    throw new Error(
+      "Unable to load products."
+    );
   }
 
+  const data =
+    await response.json();
+
+  if (
+    !data ||
+    data.success !== true ||
+    !Array.isArray(data.products)
+  ) {
+    throw new Error(
+      data && data.error
+        ? data.error
+        : "Unable to load products."
+    );
+  }
+
+  return data;
+}
 
 
-  const combined = {};
+// ============================================================
+// NORMALIZE PRODUCTS
+// Supports both old imageURL and new imageURLs
+// ============================================================
+
+function normalizeProducts(list) {
+  return list.map(function (p) {
+    return {
+      category:
+        String(p.category || "").trim(),
+
+      productNo:
+        String(p.productNo || "")
+          .trim()
+          .toUpperCase(),
+
+      productName:
+        String(p.productName || "").trim(),
+
+      description:
+        String(p.description || "").trim(),
+
+      actualPrice:
+        Number(p.actualPrice) || 0,
+
+      offerPrice:
+        Number(p.offerPrice) || 0,
+
+      availableQty:
+        Math.max(
+          0,
+          Number(p.availableQty) || 0
+        ),
+
+      stockStatus:
+        String(p.stockStatus || "")
+          .trim()
+          .toUpperCase(),
+
+      imageURL:
+        String(p.imageURL || "").trim(),
+
+      imageURLs:
+        Array.isArray(p.imageURLs)
+          ? p.imageURLs
+              .map(function (url) {
+                return String(url || "").trim();
+              })
+              .filter(function (url) {
+                return url !== "";
+              })
+          : (
+              p.imageURL
+                ? [String(p.imageURL).trim()]
+                : []
+            )
+    };
+  });
+}
 
 
+// ============================================================
+// CATEGORY MENU
+// ============================================================
 
-  text
+function createCategoryMenu() {
+  const categoryList =
+    document.getElementById(
+      "category-list"
+    );
+
+  if (!categoryList) return;
+
+  categoryList.innerHTML = "";
+
+  const allButton =
+    document.createElement("button");
+
+  allButton.type = "button";
+  allButton.className = "menu-item";
+  allButton.textContent = "All Products";
+
+  allButton.onclick = function () {
+    filterProducts("all");
+  };
+
+  categoryList.appendChild(allButton);
+
+  const categories = [];
+
+  products.forEach(function (product) {
+    if (
+      product.category &&
+      !categories.includes(
+        product.category
+      )
+    ) {
+      categories.push(
+        product.category
+      );
+    }
+  });
+
+  categories.forEach(function (category) {
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+    button.className = "menu-item";
+    button.textContent = category;
+
+    button.onclick = function () {
+      filterProducts(category);
+    };
+
+    categoryList.appendChild(button);
+  });
+
+  updateActiveCategoryButton();
+}
 
 
+function filterProducts(category) {
+  currentCategory =
+    category || "all";
 
-    .split("|")
-
-
-
-    .forEach(function (entry) {
-
-
-
-      const parts =
+  updateActiveCategoryButton();
+  renderProducts();
+  closeCategoryMenu();
+}
 
 
+function updateActiveCategoryButton() {
+  const categoryList =
+    document.getElementById(
+      "category-list"
+    );
 
-        entry.split(":");
+  if (!categoryList) return;
 
-
+  categoryList
+    .querySelectorAll(".menu-item")
+    .forEach(function (button) {
+      button.classList.remove(
+        "active-category"
+      );
 
       if (
-
-
-
-        parts.length !== 2
-
-
-
+        currentCategory === "all" &&
+        button.textContent.trim() ===
+          "All Products"
       ) {
-
-
-
-        throw new Error(
-
-
-
-          "Invalid product data."
-
-
-
+        button.classList.add(
+          "active-category"
         );
-
-
-
       }
-
-
-
-      const productNo =
-
-
-
-        normalizeProductNo(
-
-
-
-          parts[0]
-
-
-
-        );
-
-
-
-      const quantity =
-
-
-
-        Number(
-
-
-
-          parts[1]
-
-
-
-        );
-
-
 
       if (
-
-
-
-        !productNo ||
-
-
-
-        !Number.isInteger(
-
-
-
-          quantity
-
-
-
-        ) ||
-
-
-
-        quantity <= 0
-
-
-
+        currentCategory !== "all" &&
+        button.textContent.trim() ===
+          currentCategory
       ) {
-
-
-
-        throw new Error(
-
-
-
-          "Invalid product quantity."
-
-
-
+        button.classList.add(
+          "active-category"
         );
-
-
-
       }
-
-
-
-      combined[
-
-
-
-        productNo
-
-
-
-      ] =
-
-
-
-        (
-
-
-
-          combined[
-
-
-
-            productNo
-
-
-
-          ] || 0
-
-
-
-        ) +
-
-
-
-        quantity;
-
-
-
     });
+}
 
 
+// ============================================================
+// RENDER PRODUCTS
+// ============================================================
 
-  return Object
+function renderProducts() {
+  const list =
+    document.getElementById(
+      "product-list"
+    );
+
+  const noProducts =
+    document.getElementById(
+      "no-products"
+    );
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const visible =
+    currentCategory === "all"
+      ? products
+      : products.filter(
+          function (product) {
+            return (
+              product.category ===
+              currentCategory
+            );
+          }
+        );
+
+  if (!visible.length) {
+    if (noProducts) {
+      noProducts.style.display =
+        "block";
+    }
+
+    return;
+  }
+
+  if (noProducts) {
+    noProducts.style.display =
+      "none";
+  }
+
+  visible.forEach(function (product) {
+    list.appendChild(
+      createProductCard(product)
+    );
+  });
+}
 
 
+// ============================================================
+// CREATE PRODUCT CARD
+// ============================================================
 
-    .keys(combined)
+function createProductCard(product) {
+  const card =
+    document.createElement("article");
 
-
-
-    .map(function (productNo) {
-
-
-
-      return {
-
+  card.className = "product";
 
 
-        productNo:
+  // ==========================================================
+  // PRODUCT IMAGE SLIDER
+  // SWIPE + SMALL DOT INDICATORS
+  // ==========================================================
+
+  const imageContainer =
+    document.createElement("div");
+
+  imageContainer.className =
+    "product-image-container";
+
+  const placeholder =
+    document.createElement("div");
+
+  placeholder.className =
+    "image-placeholder";
+
+  placeholder.textContent =
+    "Product Image";
 
 
-
-          productNo,
-
-
-
-        quantity:
-
-
-
-          combined[
-
+  const imageURLs =
+    Array.isArray(product.imageURLs) &&
+    product.imageURLs.length
+      ? product.imageURLs
+      : (
+          product.imageURL
+            ? [product.imageURL]
+            : []
+        );
 
 
-            productNo
+  if (imageURLs.length) {
+
+    placeholder.style.display =
+      "none";
 
 
+    let currentImageIndex = 0;
 
-          ]
+    let touchStartX = 0;
+
+    let touchEndX = 0;
 
 
+    const image =
+      document.createElement("img");
+
+    image.src =
+      imageURLs[0];
+
+    image.alt =
+      product.productName;
+
+    image.className =
+      "product-image";
+
+    image.loading =
+      "lazy";
+
+    image.decoding =
+      "async";
+
+    image.draggable =
+      false;
+
+
+    const dots = [];
+
+
+    function showImage(index) {
+
+      if (!imageURLs.length) {
+        return;
+      }
+
+      if (index < 0) {
+        index =
+          imageURLs.length - 1;
+      }
+
+      if (
+        index >=
+        imageURLs.length
+      ) {
+        index = 0;
+      }
+
+      currentImageIndex =
+        index;
+
+      image.style.display =
+        "block";
+
+      placeholder.style.display =
+        "none";
+
+      image.src =
+        imageURLs[
+          currentImageIndex
+        ];
+
+      dots.forEach(
+        function (
+          dot,
+          dotIndex
+        ) {
+
+          dot.classList.toggle(
+            "active",
+            dotIndex ===
+              currentImageIndex
+          );
+
+        }
+      );
+    }
+
+
+    image.onerror =
+      function () {
+
+        image.style.display =
+          "none";
+
+        placeholder.style.display =
+          "flex";
 
       };
 
 
+    image.onload =
+      function () {
 
-    });
+        image.style.display =
+          "block";
 
+        placeholder.style.display =
+          "none";
 
-
-}
-
-
-
-// ============================================================
-
-
-
-// CUSTOMER VALIDATION
+      };
 
 
+    imageContainer.appendChild(
+      image
+    );
 
-// ============================================================
+
+    if (
+      imageURLs.length > 1
+    ) {
+
+      imageContainer.classList.add(
+        "has-image-slider"
+      );
 
 
+      const dotsContainer =
+        document.createElement(
+          "div"
+        );
 
-function validateCustomerData(data) {
+      dotsContainer.className =
+        "product-image-dots";
 
+
+      imageURLs.forEach(
+        function (_, index) {
+
+          const dot =
+            document.createElement(
+              "button"
+            );
+
+          dot.type =
+            "button";
+
+          dot.className =
+            "product-image-dot";
+
+          dot.setAttribute(
+            "aria-label",
+            "Show product image " +
+              (index + 1)
+          );
+
+
+          dot.onclick =
+            function (event) {
+
+              event.preventDefault();
+
+              event.stopPropagation();
+
+              showImage(index);
+
+            };
+
+
+          dots.push(dot);
+
+          dotsContainer.appendChild(
+            dot
+          );
+
+        }
+      );
+
+
+      imageContainer.appendChild(
+        dotsContainer
+      );
+
+
+      imageContainer.addEventListener(
+        "touchstart",
+        function (event) {
+
+          if (
+            !event.touches.length
+          ) {
+            return;
+          }
+
+          touchStartX =
+            event.touches[0]
+              .clientX;
+
+          touchEndX =
+            touchStartX;
+
+        },
+        {
+          passive: true
+        }
+      );
+
+
+      imageContainer.addEventListener(
+        "touchmove",
+        function (event) {
+
+          if (
+            !event.touches.length
+          ) {
+            return;
+          }
+
+          touchEndX =
+            event.touches[0]
+              .clientX;
+
+        },
+        {
+          passive: true
+        }
+      );
+
+
+      imageContainer.addEventListener(
+        "touchend",
+        function () {
+
+          const swipeDistance =
+            touchEndX -
+            touchStartX;
+
+          if (
+            Math.abs(
+              swipeDistance
+            ) < 40
+          ) {
+            return;
+          }
+
+          if (
+            swipeDistance < 0
+          ) {
+
+            showImage(
+              currentImageIndex + 1
+            );
+
+          } else {
+
+            showImage(
+              currentImageIndex - 1
+            );
+
+          }
+
+        },
+        {
+          passive: true
+        }
+      );
+
+
+      showImage(0);
+    }
+  }
+
+
+  imageContainer.appendChild(
+    placeholder
+  );
+
+
+  card.appendChild(
+    imageContainer
+  );
+
+
+  const info =
+    document.createElement("div");
+
+  info.className =
+    "product-info";
+
+
+  const number =
+    document.createElement("div");
+
+  number.className =
+    "product-number";
+
+  number.textContent =
+    product.productNo;
+
+  info.appendChild(number);
 
 
   const name =
+    document.createElement("h3");
 
+  name.className =
+    "product-name";
 
+  name.textContent =
+    product.productName;
 
-    String(
+  info.appendChild(name);
 
 
+  if (product.description) {
 
-      data.name || ""
+    const description =
+      document.createElement("p");
 
+    description.className =
+      "product-description";
 
+    description.textContent =
+      product.description;
 
-    ).trim();
-
-
-
-  const mobile =
-
-
-
-    String(
-
-
-
-      data.mobile || ""
-
-
-
-    )
-
-
-
-      .replace(
-
-
-
-        /\D/g,
-
-
-
-        ""
-
-
-
-      );
-
-
-
-  const address =
-
-
-
-    String(
-
-
-
-      data.address || ""
-
-
-
-    ).trim();
-
-
-
-  const city =
-
-
-
-    String(
-
-
-
-      data.city || ""
-
-
-
-    ).trim();
-
-
-
-  const pincode =
-
-
-
-    String(
-
-
-
-      data.pincode || ""
-
-
-
-    )
-
-
-
-      .replace(
-
-
-
-        /\D/g,
-
-
-
-        ""
-
-
-
-      );
-
-
-
-  if (!name) {
-
-
-
-    throw new Error(
-
-
-
-      "Please enter your name."
-
-
-
+    info.appendChild(
+      description
     );
-
-
-
   }
 
+
+  const priceArea =
+    document.createElement("div");
+
+  priceArea.className =
+    "product-price-area";
 
 
   if (
-
-
-
-    mobile.length !== 10
-
-
-
+    product.actualPrice >
+    product.offerPrice
   ) {
 
+    const actual =
+      document.createElement(
+        "span"
+      );
 
+    actual.className =
+      "actual-price";
 
-    throw new Error(
+    actual.textContent =
+      formatCurrency(
+        product.actualPrice
+      );
 
-
-
-      "Please enter a valid 10-digit mobile number."
-
-
-
+    priceArea.appendChild(
+      actual
     );
-
-
-
   }
 
 
-
-  if (!address) {
-
-
-
-    throw new Error(
-
-
-
-      "Please enter your delivery address."
-
-
-
+  const offer =
+    document.createElement(
+      "span"
     );
 
+  offer.className =
+    "offer-price";
 
-
-  }
-
-
-
-  if (!city) {
-
-
-
-    throw new Error(
-
-
-
-      "Please enter your city."
-
-
-
+  offer.textContent =
+    formatCurrency(
+      product.offerPrice
     );
 
-
-
-  }
-
-
-
-  if (
-
-
-
-    pincode.length !== 6
-
-
-
-  ) {
-
-
-
-    throw new Error(
-
-
-
-      "Please enter a valid 6-digit pincode."
-
-
-
-    );
-
-
-
-  }
-
-
-
-  return {
-
-
-
-    name:
-
-
-
-      name,
-
-
-
-    mobile:
-
-
-
-      mobile,
-
-
-
-    address:
-
-
-
-      address,
-
-
-
-    city:
-
-
-
-      city,
-
-
-
-    pincode:
-
-
-
-      pincode
-
-
-
-  };
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// ORDER ID
-
-
-
-// ============================================================
-
-
-
-function createOrderId() {
-
-
-
-  return (
-
-
-
-    "FC" +
-
-
-
-    Utilities.formatDate(
-
-
-
-      new Date(),
-
-
-
-      Session.getScriptTimeZone(),
-
-
-
-      "yyyyMMddHHmmss"
-
-
-
-    ) +
-
-
-
-    Utilities
-
-
-
-      .getUuid()
-
-
-
-      .substring(
-
-
-
-        0,
-
-
-
-        4
-
-
-
-      )
-
-
-
-      .toUpperCase()
-
-
-
+  priceArea.appendChild(
+    offer
+  );
+
+  info.appendChild(
+    priceArea
   );
 
 
+  const inStock =
+    product.availableQty > 0 &&
+    product.stockStatus !==
+      "OUT OF STOCK";
 
+
+  const stock =
+    document.createElement(
+      "div"
+    );
+
+  stock.className =
+    inStock
+      ? "stock-status in-stock"
+      : "stock-status out-of-stock";
+
+  stock.textContent =
+    inStock
+      ? "In Stock"
+      : "Out of Stock";
+
+  info.appendChild(stock);
+
+
+  const actionRow =
+    document.createElement(
+      "div"
+    );
+
+  actionRow.className =
+    "product-action-row";
+
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.type =
+    "button";
+
+  button.className =
+    "add-button";
+
+
+  const quantityControls =
+    document.createElement(
+      "div"
+    );
+
+  quantityControls.className =
+    "product-quantity-controls";
+
+
+  const minus =
+    document.createElement(
+      "button"
+    );
+
+  minus.type =
+    "button";
+
+  minus.className =
+    "product-quantity-button";
+
+  minus.textContent =
+    "−";
+
+
+  const quantity =
+    document.createElement(
+      "span"
+    );
+
+  quantity.className =
+    "product-quantity-value";
+
+
+  const plus =
+    document.createElement(
+      "button"
+    );
+
+  plus.type =
+    "button";
+
+  plus.className =
+    "product-quantity-button";
+
+  plus.textContent =
+    "+";
+
+
+  function refreshProductControls() {
+
+    const cartItem =
+      cart.find(
+        function (item) {
+
+          return (
+            item.productNo ===
+            product.productNo
+          );
+
+        }
+      );
+
+
+    if (
+      cartItem &&
+      cartItem.quantity > 0
+    ) {
+
+      quantity.textContent =
+        cartItem.quantity;
+
+      quantityControls.classList.add(
+        "show"
+      );
+
+      actionRow.classList.add(
+        "has-quantity"
+      );
+
+    } else {
+
+      quantity.textContent =
+        "0";
+
+      quantityControls.classList.remove(
+        "show"
+      );
+
+      actionRow.classList.remove(
+        "has-quantity"
+      );
+    }
+  }
+
+
+  if (inStock) {
+
+    button.textContent =
+      "Add to Cart";
+
+
+    button.onclick =
+      function () {
+
+        addToCart(
+          product.productNo
+        );
+
+        refreshProductControls();
+
+      };
+
+
+    minus.onclick =
+      function () {
+
+        decreaseQuantity(
+          product.productNo
+        );
+
+        refreshProductControls();
+
+      };
+
+
+    plus.onclick =
+      function () {
+
+        increaseQuantity(
+          product.productNo
+        );
+
+        refreshProductControls();
+
+      };
+
+  } else {
+
+    button.textContent =
+      "Out of Stock";
+
+    button.disabled =
+      true;
+
+    button.classList.add(
+      "disabled"
+    );
+  }
+
+
+  quantityControls.appendChild(
+    minus
+  );
+
+  quantityControls.appendChild(
+    quantity
+  );
+
+  quantityControls.appendChild(
+    plus
+  );
+
+
+  actionRow.appendChild(
+    button
+  );
+
+  actionRow.appendChild(
+    quantityControls
+  );
+
+
+  info.appendChild(
+    actionRow
+  );
+
+
+  refreshProductControls();
+
+
+  card.appendChild(info);
+
+  return card;
 }
 
 
-
+// ============================================================
+// CART
 // ============================================================
 
+function findProduct(productNo) {
+
+  return products.find(
+    function (product) {
+
+      return (
+        product.productNo ===
+        String(productNo)
+          .trim()
+          .toUpperCase()
+      );
+
+    }
+  );
+}
 
 
-// DUPLICATE SUBMISSION KEY
+function addToCart(productNo) {
 
+  const product =
+    findProduct(productNo);
+
+  if (!product) return;
+
+
+  if (
+    product.availableQty <= 0
+  ) {
+
+    alert(
+      "This product is out of stock."
+    );
+
+    return;
+  }
+
+
+  const existing =
+    cart.find(
+      function (item) {
+
+        return (
+          item.productNo ===
+          product.productNo
+        );
+
+      }
+    );
+
+
+  if (existing) {
+
+    if (
+      existing.quantity >=
+      product.availableQty
+    ) {
+
+      alert(
+        "Only " +
+        product.availableQty +
+        " item(s) are currently available."
+      );
+
+      return;
+    }
+
+    existing.quantity++;
+
+  } else {
+
+    cart.push({
+
+      productNo:
+        product.productNo,
+
+      productName:
+        product.productName,
+
+      price:
+        product.offerPrice,
+
+      imageURL:
+        product.imageURL ||
+        (
+          product.imageURLs &&
+          product.imageURLs[0]
+            ? product.imageURLs[0]
+            : ""
+        ),
+
+      quantity:
+        1
+    });
+  }
+
+
+  updateCart();
+}
 
 
 // ============================================================
+// INCREASE QUANTITY
+// ============================================================
 
-
-
-function getSubmissionPropertyKey(
-
-
-
-  submissionId
-
-
-
+function increaseQuantity(
+  productNo
 ) {
 
+  const item =
+    cart.find(
+      function (item) {
+
+        return (
+          item.productNo ===
+          productNo
+        );
+
+      }
+    );
 
 
-  return (
+  const product =
+    findProduct(productNo);
 
 
+  if (
+    !item ||
+    !product
+  ) {
 
-    "ORDER_" +
-
-
-
-    String(
-
-
-
-      submissionId || ""
+    return;
+  }
 
 
+  if (
+    item.quantity >=
+    product.availableQty
+  ) {
 
-    ).trim()
+    alert(
+      "Only " +
+        product.availableQty +
+        " item(s) are currently available."
+    );
+
+    return;
+  }
 
 
+  item.quantity++;
 
-  );
-
-
-
+  updateCart();
 }
 
+
+// ============================================================
+// DECREASE QUANTITY
+// ============================================================
+
+function decreaseQuantity(
+  productNo
+) {
+
+  const item =
+    cart.find(
+      function (item) {
+
+        return (
+          item.productNo ===
+          productNo
+        );
+
+      }
+    );
+
+
+  if (!item) return;
+
+
+  item.quantity--;
+
+
+  if (
+    item.quantity <= 0
+  ) {
+
+    removeFromCart(
+      productNo
+    );
+
+    return;
+  }
+
+
+  updateCart();
+}
+
+
+// ============================================================
+// REMOVE PRODUCT
+// ============================================================
+
+function removeFromCart(
+  productNo
+) {
+
+  cart =
+    cart.filter(
+      function (item) {
+
+        return (
+          item.productNo !==
+          productNo
+        );
+
+      }
+    );
+
+
+  updateCart();
+}
+
+
+// ============================================================
+// CART TOTAL
+// ============================================================
+
+function getCartTotal() {
+
+  return cart.reduce(
+    function (
+      total,
+      item
+    ) {
+
+      return (
+        total +
+        item.price *
+        item.quantity
+      );
+
+    },
+    0
+  );
+}
 
 
 
 // ============================================================
 // SHIPPING & PACKING
-// Server-side authoritative calculation
 // ============================================================
 
 function getShippingCharge(subtotal) {
@@ -1949,5343 +1283,1229 @@ function getShippingCharge(subtotal) {
   return 149;
 }
 
-// ============================================================
-
-
-
-// CREATE ORDER
-
-
+function getGrandTotal() {
+  const subtotal = getCartTotal();
+  return subtotal + getShippingCharge(subtotal);
+}
 
 // ============================================================
-
-
-
-function createOrderOnServer(data) {
-
-
-
-  const lock =
-
-
-
-    LockService
-
-
-
-      .getScriptLock();
-
-
-
-  try {
-
-
-
-    lock.waitLock(
-
-
-
-      30000
-
-
-
-    );
-
-
-
-    const submissionId =
-
-
-
-      String(
-
-
-
-        data.submissionId || ""
-
-
-
-      ).trim();
-
-
-
-    if (!submissionId) {
-
-
-
-      throw new Error(
-
-
-
-        "Invalid checkout submission."
-
-
-
-      );
-
-
-
-    }
-
-
-
-    const properties =
-
-
-
-      PropertiesService
-
-
-
-        .getScriptProperties();
-
-
-
-    const propertyKey =
-
-
-
-      getSubmissionPropertyKey(
-
-
-
-        submissionId
-
-
-
-      );
-
-
-
-    const previous =
-
-
-
-      properties.getProperty(
-
-
-
-        propertyKey
-
-
-
-      );
-
-
-
-    // Same checkout already created.
-
-
-
-    if (previous) {
-
-
-
-      return JSON.parse(
-
-
-
-        previous
-
-
-
-      );
-
-
-
-    }
-
-
-
-    const customer =
-
-
-
-      validateCustomerData(
-
-
-
-        data
-
-
-
-      );
-
-
-
-    const requested =
-
-
-
-      parseProductData(
-
-
-
-        data.productData
-
-
-
-      );
-
-
-
-    // Ensure current inventory values.
-
-
-
-    recalculateInventory();
-
-
-
-    SpreadsheetApp.flush();
-
-
-
-    const productMap =
-
-
-
-      getProductMap();
-
-
-
-    const verified = [];
-
-
-
-    let subtotal = 0;
-
-
-
-    requested.forEach(
-
-
-
-      function (request) {
-
-
-
-        const product =
-
-
-
-          productMap[
-
-
-
-            request.productNo
-
-
-
-          ];
-
-
-
-        if (!product) {
-
-
-
-          throw new Error(
-
-
-
-            "Product " +
-
-
-
-            request.productNo +
-
-
-
-            " is no longer available."
-
-
-
-          );
-
-
-
-        }
-
-
-
-        if (
-
-
-
-          product.offerPrice <= 0
-
-
-
-        ) {
-
-
-
-          throw new Error(
-
-
-
-            product.productName +
-
-
-
-            " has an invalid selling price."
-
-
-
-          );
-
-
-
-        }
-
-
-
-        if (
-
-
-
-          product.availableQty <= 0
-
-
-
-        ) {
-
-
-
-          throw new Error(
-
-
-
-            product.productName +
-
-
-
-            " is currently out of stock."
-
-
-
-          );
-
-
-
-        }
-
-
-
-        if (
-
-
-
-          request.quantity >
-
-
-
-          product.availableQty
-
-
-
-        ) {
-
-
-
-          throw new Error(
-
-
-
-            "Only " +
-
-
-
-            product.availableQty +
-
-
-
-            " item(s) of " +
-
-
-
-            product.productName +
-
-
-
-            " are currently available."
-
-
-
-          );
-
-
-
-        }
-
-
-
-        const lineTotal =
-
-
-
-          product.offerPrice *
-
-
-
-          request.quantity;
-
-
-
-        subtotal +=
-
-          lineTotal;
-
-
-
-        verified.push({
-
-
-
-          productNo:
-
-
-
-            product.productNo,
-
-
-
-          productName:
-
-
-
-            product.productName,
-
-
-
-          quantity:
-
-
-
-            request.quantity,
-
-
-
-          price:
-
-
-
-            product.offerPrice,
-
-
-
-          lineTotal:
-
-
-
-            lineTotal
-
-
-
-        });
-
-
-
-      }
-
-
-
-    );
-
-
-
-    if (
-
-      !Number.isFinite(subtotal) ||
-
-      subtotal <= 0
-
+// CART COUNT
+// ============================================================
+
+function getCartCount() {
+
+  return cart.reduce(
+    function (
+      total,
+      item
     ) {
 
-      throw new Error(
-
-        "Invalid order total."
-
+      return (
+        total +
+        item.quantity
       );
 
-    }
-
-    const shipping =
-      getShippingCharge(subtotal);
-
-    const total =
-      subtotal + shipping;
-
-
-
-    const readableProducts =
-
-
-
-      verified
-
-
-
-        .map(function (item) {
-
-
-
-          return (
-
-
-
-            item.productName +
-
-
-
-            " x " +
-
-
-
-            item.quantity +
-
-
-
-            " = ₹" +
-
-
-
-            item.lineTotal.toFixed(2)
-
-
-
-          );
-
-
-
-        })
-
-
-
-        .join(" | ") +
-
-        " | Product Subtotal = ₹" +
-
-        subtotal.toFixed(2) +
-
-        " | Shipping & Packing = ₹" +
-
-        shipping.toFixed(2);
-
-
-
-    const productData =
-
-
-
-      verified
-
-
-
-        .map(function (item) {
-
-
-
-          return (
-
-
-
-            item.productNo +
-
-
-
-            ":" +
-
-
-
-            item.quantity
-
-
-
-          );
-
-
-
-        })
-
-
-
-        .join("|");
-
-
-
-    const orderId =
-
-
-
-      createOrderId();
-
-
-
-    const dateTime =
-
-
-
-      Utilities.formatDate(
-
-
-
-        new Date(),
-
-
-
-        Session.getScriptTimeZone(),
-
-
-
-        "dd/MM/yyyy HH:mm:ss"
-
-
-
-      );
-
-
-
-    const orderSheet =
-
-
-
-      getOrderSheet();
-
-
-
-    orderSheet.appendRow([
-
-
-
-      orderId,                 // A Order ID
-
-
-
-      dateTime,                // B Date & Time
-
-
-
-      customer.name,           // C Customer Name
-
-
-
-      customer.mobile,         // D Mobile Number
-
-
-
-      customer.address,        // E Address
-
-
-
-      customer.city,           // F City
-
-
-
-      customer.pincode,        // G Pincode
-
-
-
-      readableProducts,        // H Products
-
-
-
-      total,                   // I Total Amount
-
-
-
-      "",                      // J Order Status
-
-
-
-      "",                      // K Tracking ID
-
-
-
-      "",                      // L Payment Link
-
-
-
-      "",                      // M Send
-
-
-
-      productData              // N Product Data
-
-
-
-    ]);
-
-
-
-    const row =
-
-
-
-      orderSheet.getLastRow();
-
-
-
-    const paymentURL =
-
-
-
-      WEB_APP_URL +
-
-
-
-      "?order=" +
-
-
-
-      encodeURIComponent(
-
-
-
-        orderId
-
-
-
-      );
-
-
-
-    orderSheet
-
-
-
-      .getRange(
-
-
-
-        row,
-
-
-
-        12
-
-
-
-      )
-
-
-
-      .setFormula(
-
-
-
-        '=HYPERLINK("' +
-
-
-
-        paymentURL +
-
-
-
-        '","PAY ₹' +
-
-
-
-        total.toFixed(2) +
-
-
-
-        '")'
-
-
-
-      );
-
-
-
-    recalculateInventory();
-
-
-
-    SpreadsheetApp.flush();
-
-
-
-    const result = {
-
-
-
-      success: true,
-
-
-
-      orderId:
-
-
-
-        orderId,
-
-
-
-      subtotal:
-
-        subtotal,
-
-      shipping:
-
-        shipping,
-
-      total:
-
-        total,
-
-
-
-      paymentURL:
-
-
-
-        paymentURL,
-
-
-
-      customer:
-
-
-
-        customer,
-
-
-
-      products:
-
-
-
-        verified
-
-
-
-    };
-
-
-
-    // Store successful submission.
-
-
-
-    properties.setProperty(
-
-
-
-      propertyKey,
-
-
-
-      JSON.stringify(
-
-
-
-        result
-
-
-
-      )
-
-
-
-    );
-
-
-
-    return result;
-
-
-
-  } catch (error) {
-
-
-
-    return {
-
-
-
-      success: false,
-
-
-
-      error:
-
-
-
-        String(
-
-
-
-          error.message ||
-
-
-
-          error
-
-
-
-        )
-
-
-
-    };
-
-
-
-  } finally {
-
-
-
-    try {
-
-
-
-      lock.releaseLock();
-
-
-
-    } catch (ignore) {
-
-
-
-    }
-
-
-
-  }
-
-
-
+    },
+    0
+  );
 }
 
 
-
+// ============================================================
+// UPDATE CART
 // ============================================================
 
-
-
-// INVENTORY RECALCULATION
-
-
-
-// ============================================================
-
-
-
-function recalculateInventory() {
-
-
-
-  const orderSheet =
-
-
-
-    getOrderSheet();
-
-
-
-  const orderedTotals = {};
-
-
-
-  const lastOrderRow =
-
-
-
-    orderSheet.getLastRow();
-
-
-
-  if (
-
-
-
-    lastOrderRow >= 2
-
-
-
-  ) {
-
-
-
-    // J:N
-
-
-
-    const rows =
-
-
-
-      orderSheet
-
-
-
-        .getRange(
-
-
-
-          2,
-
-
-
-          10,
-
-
-
-          lastOrderRow - 1,
-
-
-
-          5
-
-
-
-        )
-
-
-
-        .getDisplayValues();
-
-
-
-    rows.forEach(
-
-
-
-      function (row) {
-
-
-
-        const status =
-
-
-
-          String(
-
-
-
-            row[0] || ""
-
-
-
-          )
-
-
-
-            .trim()
-
-
-
-            .toLowerCase();
-
-
-
-        const productData =
-
-
-
-          String(
-
-
-
-            row[4] || ""
-
-
-
-          ).trim();
-
-
-
-        // Cancelled orders release inventory.
-
-
-
-        if (
-
-
-
-          status ===
-
-
-
-          "cancelled"
-
-
-
-        ) {
-
-
-
-          return;
-
-
-
-        }
-
-
-
-        // Old orders without Product Data
-
-
-
-        // cannot be counted automatically.
-
-
-
-        if (!productData) {
-
-
-
-          return;
-
-
-
-        }
-
-
-
-        try {
-
-
-
-          const items =
-
-
-
-            parseProductData(
-
-
-
-              productData
-
-
-
-            );
-
-
-
-          items.forEach(
-
-
-
-            function (item) {
-
-
-
-              orderedTotals[
-
-
-
-                item.productNo
-
-
-
-              ] =
-
-
-
-                (
-
-
-
-                  orderedTotals[
-
-
-
-                    item.productNo
-
-
-
-                  ] || 0
-
-
-
-                ) +
-
-
-
-                item.quantity;
-
-
-
-            }
-
-
-
-          );
-
-
-
-        } catch (error) {
-
-
-
-          console.log(
-
-
-
-            "Invalid Product Data skipped: " +
-
-
-
-            productData
-
-
-
-          );
-
-
-
-        }
-
-
-
-      }
-
-
-
+function updateCart() {
+
+  const itemsBox =
+    document.getElementById(
+      "cart-items"
     );
 
+  const countBox =
+    document.getElementById(
+      "cart-count"
+    );
 
+  const totalBox =
+    document.getElementById(
+      "cart-total"
+    );
+
+  const barTotal =
+    document.getElementById(
+      "cart-bar-total"
+    );
+
+  const checkoutButton =
+    document.getElementById(
+      "checkout-button"
+    );
+
+  const subtotal =
+    getCartTotal();
+
+  const shipping =
+    getShippingCharge(subtotal);
+
+  const total =
+    subtotal + shipping;
+
+
+  if (countBox) {
+
+    countBox.textContent =
+      getCartCount();
 
   }
 
 
+  if (totalBox) {
 
-  const productSpreadsheet =
+    totalBox.textContent =
+      formatCurrency(total);
 
-
-
-    getProductsSpreadsheet();
-
-
-
-  productSpreadsheet
+  }
 
 
+  if (barTotal) {
 
-    .getSheets()
+    barTotal.textContent =
+      formatCurrency(total);
 
-
-
-    .forEach(function (sheet) {
-
-
-
-      const lastRow =
+  }
 
 
+  if (checkoutButton) {
 
-        sheet.getLastRow();
+    checkoutButton.disabled =
+      cart.length === 0;
 
-
-
-      if (
-
-
-
-        lastRow < 2
+  }
 
 
+  if (!itemsBox) {
 
-      ) {
+    updateCheckoutSummary();
+
+    if (catalogueLoaded) {
+      renderProducts();
+    }
+
+    return;
+  }
 
 
+  itemsBox.innerHTML =
+    "";
 
-        return;
+
+  if (!cart.length) {
+
+    const empty =
+      document.createElement(
+        "p"
+      );
+
+    empty.className =
+      "empty-cart-message";
+
+    empty.textContent =
+      "Your cart is empty.";
+
+    itemsBox.appendChild(
+      empty
+    );
 
 
+    updateCheckoutSummary();
+
+
+    if (catalogueLoaded) {
+
+      renderProducts();
+
+    }
+
+
+    return;
+  }
+
+
+  cart.forEach(
+    function (item) {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "cart-item";
+
+
+      const imageBox =
+        document.createElement(
+          "div"
+        );
+
+      imageBox.className =
+        "cart-item-image-box";
+
+
+      if (item.imageURL) {
+
+        const image =
+          document.createElement(
+            "img"
+          );
+
+        image.src =
+          item.imageURL;
+
+        image.alt =
+          item.productName;
+
+        image.className =
+          "cart-item-image";
+
+        image.loading =
+          "lazy";
+
+        image.decoding =
+          "async";
+
+
+        image.onerror =
+          function () {
+
+            image.style.display =
+              "none";
+
+            imageBox.classList.add(
+              "cart-image-placeholder"
+            );
+
+            imageBox.textContent =
+              "No Image";
+
+          };
+
+
+        imageBox.appendChild(
+          image
+        );
+
+      } else {
+
+        imageBox.classList.add(
+          "cart-image-placeholder"
+        );
+
+        imageBox.textContent =
+          "No Image";
 
       }
 
 
+      const details =
+        document.createElement(
+          "div"
+        );
 
-      // Column C = Product No.
+      details.className =
+        "cart-item-details";
 
 
+      const name =
+        document.createElement(
+          "div"
+        );
 
-      const productNumbers =
+      name.className =
+        "cart-item-name";
 
+      name.textContent =
+        item.productName;
 
 
-        sheet
+      const number =
+        document.createElement(
+          "div"
+        );
 
+      number.className =
+        "cart-item-product-number";
 
+      number.textContent =
+        item.productNo;
 
-          .getRange(
 
+      const price =
+        document.createElement(
+          "div"
+        );
 
+      price.className =
+        "cart-item-price";
 
-            2,
+      price.textContent =
+        formatCurrency(
+          item.price
+        ) +
+        " each";
 
 
+      const itemSubtotal =
+        document.createElement(
+          "div"
+        );
 
-            3,
+      itemSubtotal.className =
+        "cart-item-subtotal";
 
-
-
-            lastRow - 1,
-
-
-
-            1
-
-
-
-          )
-
-
-
-          .getDisplayValues();
-
-
-
-      const orderedValues =
-
-
-
-        productNumbers.map(
-
-
-
-          function (row) {
-
-
-
-            const productNo =
-
-
-
-              normalizeProductNo(
-
-
-
-                row[0]
-
-
-
-              );
-
-
-
-            return [
-
-
-
-              productNo
-
-
-
-                ? (
-
-
-
-                    orderedTotals[
-
-
-
-                      productNo
-
-
-
-                    ] || 0
-
-
-
-                  )
-
-
-
-                : 0
-
-
-
-            ];
-
-
-
-          }
-
-
-
+      itemSubtotal.textContent =
+        item.quantity +
+        " × " +
+        formatCurrency(
+          item.price
+        ) +
+        " = " +
+        formatCurrency(
+          item.price *
+          item.quantity
         );
 
 
+      details.appendChild(
+        name
+      );
 
-      // Column I = Ordered Qty (Auto)
+      details.appendChild(
+        number
+      );
 
+      details.appendChild(
+        price
+      );
 
-
-      sheet
-
-
-
-        .getRange(
-
-
-
-          2,
-
-
-
-          9,
+      details.appendChild(
+        itemSubtotal
+      );
 
 
-
-          orderedValues.length,
-
-
-
-          1
-
-
-
-        )
-
-
-
-        .setValues(
-
-
-
-          orderedValues
-
-
-
+      const controls =
+        document.createElement(
+          "div"
         );
 
+      controls.className =
+        "cart-item-controls";
 
+
+      const minus =
+        document.createElement(
+          "button"
+        );
+
+      minus.type =
+        "button";
+
+      minus.textContent =
+        "−";
+
+
+      minus.onclick =
+        function () {
+
+          decreaseQuantity(
+            item.productNo
+          );
+
+        };
+
+
+      const quantity =
+        document.createElement(
+          "span"
+        );
+
+      quantity.className =
+        "cart-item-quantity";
+
+      quantity.textContent =
+        item.quantity;
+
+
+      const plus =
+        document.createElement(
+          "button"
+        );
+
+      plus.type =
+        "button";
+
+      plus.textContent =
+        "+";
+
+
+      plus.onclick =
+        function () {
+
+          increaseQuantity(
+            item.productNo
+          );
+
+        };
+
+
+      const remove =
+        document.createElement(
+          "button"
+        );
+
+      remove.type =
+        "button";
+
+      remove.className =
+        "remove-cart-item";
+
+      remove.textContent =
+        "Remove";
+
+
+      remove.onclick =
+        function () {
+
+          removeFromCart(
+            item.productNo
+          );
+
+        };
+
+
+      controls.appendChild(
+        minus
+      );
+
+      controls.appendChild(
+        quantity
+      );
+
+      controls.appendChild(
+        plus
+      );
+
+      controls.appendChild(
+        remove
+      );
+
+
+      row.appendChild(
+        imageBox
+      );
+
+      row.appendChild(
+        details
+      );
+
+      row.appendChild(
+        controls
+      );
+
+
+      itemsBox.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  updateCheckoutSummary();
+
+
+  if (catalogueLoaded) {
+    renderProducts();
+  }
+}
+
+
+// ============================================================
+// CHECKOUT SUMMARY
+// ============================================================
+
+function updateCheckoutSummary() {
+
+  const itemsBox =
+    document.getElementById(
+      "checkout-items"
+    );
+
+  const totalBox =
+    document.getElementById(
+      "checkout-total"
+    );
+
+  if (itemsBox) {
+
+    itemsBox.innerHTML = "";
+
+    cart.forEach(function (item) {
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "checkout-summary-item";
+
+      const left =
+        document.createElement("span");
+
+      left.textContent =
+        item.productName +
+        " × " +
+        item.quantity;
+
+      const right =
+        document.createElement("strong");
+
+      right.textContent =
+        formatCurrency(
+          item.price * item.quantity
+        );
+
+      row.appendChild(left);
+      row.appendChild(right);
+      itemsBox.appendChild(row);
 
     });
 
+    if (cart.length > 0) {
 
+      const subtotal =
+        getCartTotal();
 
-  SpreadsheetApp.flush();
+      const shipping =
+        getShippingCharge(subtotal);
 
+      const subtotalRow =
+        document.createElement("div");
 
+      subtotalRow.className =
+        "checkout-summary-item";
 
-}
+      const subtotalLabel =
+        document.createElement("span");
 
+      subtotalLabel.textContent =
+        "Product Subtotal";
 
+      const subtotalValue =
+        document.createElement("strong");
 
-// ============================================================
+      subtotalValue.textContent =
+        formatCurrency(subtotal);
 
-
-
-// POST - CUSTOMER CHECKOUT
-
-
-
-// ============================================================
-
-
-
-function doPost(e) {
-
-
-
-  try {
-
-
-
-    if (
-
-
-
-      !e ||
-
-
-
-      !e.parameter ||
-
-
-
-      e.parameter.action !==
-
-
-
-        "placeOrder"
-
-
-
-    ) {
-
-
-
-      return createCheckoutErrorPage(
-
-
-
-        "Invalid order request."
-
-
-
+      subtotalRow.appendChild(
+        subtotalLabel
       );
 
+      subtotalRow.appendChild(
+        subtotalValue
+      );
 
+      itemsBox.appendChild(
+        subtotalRow
+      );
+
+      const shippingRow =
+        document.createElement("div");
+
+      shippingRow.className =
+        "checkout-summary-item";
+
+      const shippingLabel =
+        document.createElement("span");
+
+      shippingLabel.textContent =
+        "Shipping & Packing";
+
+      const shippingValue =
+        document.createElement("strong");
+
+      shippingValue.textContent =
+        formatCurrency(shipping);
+
+      shippingRow.appendChild(
+        shippingLabel
+      );
+
+      shippingRow.appendChild(
+        shippingValue
+      );
+
+      itemsBox.appendChild(
+        shippingRow
+      );
 
     }
-
-
-
-    const orderData =
-
-
-
-      JSON.parse(
-
-
-
-        String(
-
-
-
-          e.parameter.orderData ||
-
-
-
-          "{}"
-
-
-
-        )
-
-
-
-      );
-
-
-
-    const result =
-
-
-
-      createOrderOnServer(
-
-
-
-        orderData
-
-
-
-      );
-
-
-
-    if (
-
-
-
-      !result.success
-
-
-
-    ) {
-
-
-
-      return createCheckoutErrorPage(
-
-
-
-        result.error
-
-
-
-      );
-
-
-
-    }
-
-
-
-    return createOrderSuccessPage(
-
-
-
-      result
-
-
-
-    );
-
-
-
-  } catch (error) {
-
-
-
-    return createCheckoutErrorPage(
-
-
-
-      String(
-
-
-
-        error.message ||
-
-
-
-        error
-
-
-
-      )
-
-
-
-    );
-
-
 
   }
 
+  if (totalBox) {
 
+    totalBox.textContent =
+      formatCurrency(
+        getGrandTotal()
+      );
+
+  }
 
 }
 
 
-
+// ============================================================
+// CART OPEN / CLOSE
 // ============================================================
 
+function openCart() {
 
+  const popup =
+    document.getElementById(
+      "cart-popup"
+    );
 
-// SUCCESS PAGE
-
-
-
-// ============================================================
-
-
-
-function createOrderSuccessPage(
-
-
-
-  result
-
-
-
-) {
-
-
-
-  const orderId =
-
-
-
-    String(
-
-
-
-      result.orderId || ""
-
-
-
+  const overlay =
+    document.getElementById(
+      "cart-overlay"
     );
 
 
-
-  const subtotal =
-    Number(
-      result.subtotal
-    ).toFixed(2);
-
-  const shipping =
-    Number(
-      result.shipping
-    ).toFixed(2);
-
-  const total =
-    Number(
-      result.total
-    ).toFixed(2);
-
-
-
-  let productText = "";
-
-
-
-  result.products.forEach(
-
-
-
-    function (item) {
-
-
-
-      productText +=
-
-
-
-        item.productName +
-
-
-
-        " (" +
-
-
-
-        item.productNo +
-
-
-
-        ") x " +
-
-
-
-        item.quantity +
-
-
-
-        " - ₹" +
-
-
-
-        Number(
-
-
-
-          item.lineTotal
-
-
-
-        ).toFixed(2) +
-
-
-
-        "\n";
-
-
-
-    }
-
-
-
-  );
-
-
-
-  // ==========================================================
-
-
-
-  // CUSTOMER -> BUSINESS WHATSAPP MESSAGE
-
-
-
-  // ==========================================================
-
-
-
-  let whatsappMessage =
-
-
-
-    "FESTIVE CART - NEW ORDER\n\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    "Order ID: " +
-
-
-
-    orderId +
-
-
-
-    "\n\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    "Customer Name: " +
-
-
-
-    result.customer.name +
-
-
-
-    "\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    "Mobile: " +
-
-
-
-    result.customer.mobile +
-
-
-
-    "\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    "Address: " +
-
-
-
-    result.customer.address +
-
-
-
-    "\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    "City: " +
-
-
-
-    result.customer.city +
-
-
-
-    "\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    "Pincode: " +
-
-
-
-    result.customer.pincode +
-
-
-
-    "\n\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    "ORDER DETAILS\n\n";
-
-
-
-  whatsappMessage +=
-
-
-
-    productText;
-
-
-
-  whatsappMessage +=
-    "\nProduct Subtotal: ₹" +
-    subtotal;
-
-  whatsappMessage +=
-    "\nShipping & Packing: ₹" +
-    shipping;
-
-  whatsappMessage +=
-    "\nTotal Amount: ₹" +
-    total;
-
-
-
-  whatsappMessage +=
-
-
-
-    "\n\nOrder submitted successfully.";
-
-
-
-  // ==========================================================
-
-
-
-  // WHATSAPP URL
-
-
-
-  //
-
-
-
-  // We use api.whatsapp.com here and explicitly open it in
-
-
-
-  // another browser tab/window.
-
-
-
-  // ==========================================================
-
-
-
-  const whatsappURL =
-
-
-
-    "https://api.whatsapp.com/send" +
-
-
-
-    "?phone=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      BUSINESS_WHATSAPP
-
-
-
-    ) +
-
-
-
-    "&text=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      whatsappMessage
-
-
-
+  if (popup) {
+    popup.classList.add(
+      "open"
+    );
+  }
+
+
+  if (overlay) {
+    overlay.classList.add(
+      "show"
+    );
+  }
+}
+
+
+function closeCart() {
+
+  const popup =
+    document.getElementById(
+      "cart-popup"
+    );
+
+  const overlay =
+    document.getElementById(
+      "cart-overlay"
     );
 
 
-
-  const safeWhatsAppURL =
-
-
-
-    escapeHtml(
-
+  if (popup) {
+    popup.classList.remove(
+      "open"
+    );
+  }
 
 
-      whatsappURL
+  if (overlay) {
+    overlay.classList.remove(
+      "show"
+    );
+  }
+}
 
 
+// ============================================================
+// CHECKOUT OPEN / CLOSE
+// ============================================================
 
+function showCheckout() {
+
+  if (!cart.length) {
+
+    alert(
+      "Your cart is empty."
+    );
+
+    return;
+  }
+
+
+  closeCart();
+
+  updateCheckoutSummary();
+
+
+  const section =
+    document.getElementById(
+      "checkout-section"
     );
 
 
+  if (section) {
 
-  const html = `
+    section.style.display =
+      "block";
 
-
-
-<!DOCTYPE html>
-
-
-
-<html>
-
-
-
-<head>
-
-
-
-<meta
-
-
-
-  name="viewport"
-
-
-
-  content="width=device-width, initial-scale=1"
-
-
-
->
-
-
-
-<title>
-
-
-
-Festive Cart - Order Confirmed
-
-
-
-</title>
-
-
-
-<style>
-
-
-
-* {
-
-
-
-  box-sizing: border-box;
-
-
-
+  }
 }
 
 
-
-body {
-
-
-
-  margin: 0;
-
-
-
-  padding: 22px 15px;
-
-
-
-  background: #f5f5f5;
-
-
-
-  font-family:
-
-
-
-    Arial,
-
-
-
-    Helvetica,
-
-
-
-    sans-serif;
-
-
-
-  color: #222;
-
-
-
-}
-
-
-
-.box {
-
-
-
-  width: 100%;
-
-
-
-  max-width: 450px;
-
-
-
-  margin: 20px auto;
-
-
-
-  padding: 28px 20px;
-
-
-
-  background: #ffffff;
-
-
-
-  border-radius: 18px;
-
-
-
-  box-shadow:
-
-
-
-    0 4px 18px
-
-
-
-    rgba(0,0,0,0.10);
-
-
-
-  text-align: center;
-
-
-
-}
-
-
-
-.tick {
-
-
-
-  width: 70px;
-
-
-
-  height: 70px;
-
-
-
-  margin:
-
-
-
-    0 auto 18px;
-
-
-
-  border-radius: 50%;
-
-
-
-  background: #11823b;
-
-
-
-  color: #ffffff;
-
-
-
-  display: flex;
-
-
-
-  align-items: center;
-
-
-
-  justify-content: center;
-
-
-
-  font-size: 38px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-h1 {
-
-
-
-  margin:
-
-
-
-    0 0 10px;
-
-
-
-  color: #c62828;
-
-
-
-  font-size: 27px;
-
-
-
-}
-
-
-
-.success-title {
-
-
-
-  margin-top: 18px;
-
-
-
-  font-size: 21px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-.order-info {
-
-
-
-  margin-top: 22px;
-
-
-
-  padding: 18px;
-
-
-
-  background: #f7f7f7;
-
-
-
-  border-radius: 12px;
-
-
-
-}
-
-
-
-.label {
-
-
-
-  color: #666;
-
-
-
-  font-size: 13px;
-
-
-
-  margin-bottom: 5px;
-
-
-
-}
-
-
-
-.value {
-
-
-
-  margin-bottom: 16px;
-
-
-
-  font-size: 17px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-.amount {
-
-
-
-  font-size: 30px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-.whatsapp-button {
-
-
-
-  display: block;
-
-
-
-  width: 100%;
-
-
-
-  margin-top: 22px;
-
-
-
-  padding: 16px 12px;
-
-
-
-  border: none;
-
-
-
-  border-radius: 10px;
-
-
-
-  background: #11823b;
-
-
-
-  color: #ffffff;
-
-
-
-  text-decoration: none;
-
-
-
-  font-size: 17px;
-
-
-
-  font-weight: bold;
-
-
-
-  cursor: pointer;
-
-
-
-}
-
-
-
-.whatsapp-button:hover {
-
-
-
-  opacity: 0.92;
-
-
-
-}
-
-
-
-.copy-box {
-
-
-
-  margin-top: 18px;
-
-
-
-  padding: 14px;
-
-
-
-  background: #f5f5f5;
-
-
-
-  border-radius: 10px;
-
-
-
-}
-
-
-
-.copy-title {
-
-
-
-  margin-bottom: 8px;
-
-
-
-  color: #666;
-
-
-
-  font-size: 13px;
-
-
-
-}
-
-
-
-.number {
-
-
-
-  font-size: 16px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-.note {
-
-
-
-  margin-top: 20px;
-
-
-
-  color: #666;
-
-
-
-  font-size: 13px;
-
-
-
-  line-height: 1.6;
-
-
-
-}
-
-
-
-</style>
-
-
-
-</head>
-
-
-
-<body>
-
-
-
-<div class="box">
-
-
-
-<div class="tick">
-
-
-
-✓
-
-
-
-</div>
-
-
-
-<h1>
-
-
-
-FESTIVE CART
-
-
-
-</h1>
-
-
-
-<div class="success-title">
-
-
-
-Order submitted successfully
-
-
-
-</div>
-
-
-
-<div class="order-info">
-
-
-
-<div class="label">
-
-
-
-Order ID
-
-
-
-</div>
-
-
-
-<div class="value">
-
-
-
-${escapeHtml(orderId)}
-
-
-
-</div>
-
-
-
-<div class="label">
-Product Subtotal
-</div>
-<div class="value">
-₹${escapeHtml(subtotal)}
-</div>
-
-<div class="label">
-Shipping & Packing
-</div>
-<div class="value">
-₹${escapeHtml(shipping)}
-</div>
-
-<div class="label">
-Total Amount
-</div>
-<div class="amount">
-₹${escapeHtml(total)}
-</div>
-
-
-
-</div>
-
-
-
-<a
-
-
-
-  class="whatsapp-button"
-
-
-
-  href="${safeWhatsAppURL}"
-
-
-
-  target="_blank"
-
-
-
-  rel="noopener noreferrer"
-
-
-
->
-
-
-
-SEND ORDER ON WHATSAPP
-
-
-
-</a>
-
-
-
-<div class="copy-box">
-
-
-
-<div class="copy-title">
-
-
-
-Festive Cart WhatsApp Number
-
-
-
-</div>
-
-
-
-<div class="number">
-
-
-
-+91 80153 37696
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-<div class="note">
-
-
-
-<strong>
-
-
-
-Your order has already been recorded.
-
-
-
-</strong>
-
-
-
-<br><br>
-
-
-
-Do not place the order again.
-
-
-
-<br><br>
-
-
-
-Tap
-
-
-
-<strong>
-
-
-
-SEND ORDER ON WHATSAPP
-
-
-
-</strong>
-
-
-
-to send your confirmed order details to Festive Cart.
-
-
-
-<br><br>
-
-
-
-If WhatsApp does not open automatically,
-
-
-
-open WhatsApp manually and contact
-
-
-
-<strong>
-
-
-
-8015337696
-
-
-
-</strong>.
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-</body>
-
-
-
-</html>
-
-
-
-  `;
-
-
-
-  return HtmlService
-
-
-
-    .createHtmlOutput(
-
-
-
-      html
-
-
-
-    )
-
-
-
-    .setTitle(
-
-
-
-      "Festive Cart - Order Confirmed"
-
-
-
+function closeCheckout() {
+
+  const section =
+    document.getElementById(
+      "checkout-section"
     );
 
 
+  if (section) {
 
+    section.style.display =
+      "none";
+
+  }
 }
 
 
-
+// ============================================================
+// PLACE ORDER
 // ============================================================
 
-
-
-// CHECKOUT / PAYMENT ERROR PAGE
-
-
-
-// ============================================================
-
-
-
-function createCheckoutErrorPage(
-
-
-
-  message
-
-
-
-) {
-
-
-
-  const html = `
-
-
-
-<!DOCTYPE html>
-
-
-
-<html>
-
-
-
-<head>
-
-
-
-<meta
-
-
-
-  name="viewport"
-
-
-
-  content="width=device-width, initial-scale=1"
-
-
-
->
-
-
-
-<title>
-
-
-
-Festive Cart
-
-
-
-</title>
-
-
-
-</head>
-
-
-
-<body style="
-
-
-
-margin:0;
-
-
-
-padding:25px 15px;
-
-
-
-background:#f5f5f5;
-
-
-
-font-family:Arial,Helvetica,sans-serif;
-
-
-
-">
-
-
-
-<div style="
-
-
-
-max-width:450px;
-
-
-
-margin:30px auto;
-
-
-
-padding:28px 20px;
-
-
-
-background:#ffffff;
-
-
-
-border-radius:16px;
-
-
-
-text-align:center;
-
-
-
-box-shadow:0 4px 18px rgba(0,0,0,.1);
-
-
-
-">
-
-
-
-<h2 style="
-
-
-
-color:#c62828;
-
-
-
-">
-
-
-
-FESTIVE CART
-
-
-
-</h2>
-
-
-
-<h3>
-
-
-
-Unable to continue
-
-
-
-</h3>
-
-
-
-<p style="
-
-
-
-line-height:1.6;
-
-
-
-color:#555;
-
-
-
-">
-
-
-
-${escapeHtml(message)}
-
-
-
-</p>
-
-
-
-<p style="
-
-
-
-font-size:13px;
-
-
-
-color:#777;
-
-
-
-line-height:1.5;
-
-
-
-">
-
-
-
-Please return to Festive Cart and check the order details.
-
-
-
-</p>
-
-
-
-</div>
-
-
-
-</body>
-
-
-
-</html>
-
-
-
-  `;
-
-
-
-  return HtmlService
-
-
-
-    .createHtmlOutput(
-
-
-
-      html
-
-
-
-    )
-
-
-
-    .setTitle(
-
-
-
-      "Festive Cart"
-
-
-
-    );
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// FIND ORDER
-
-
-
-// ============================================================
-
-
-
-function findOrderById(
-
-
-
-  orderId
-
-
-
-) {
-
-
-
-  const sheet =
-
-
-
-    getOrderSheet();
-
-
-
-  const lastRow =
-
-
-
-    sheet.getLastRow();
-
-
+function placeOrder() {
 
   if (
-
-
-
-    lastRow < 2
-
-
-
+    orderSubmissionInProgress
   ) {
 
-
-
-    return null;
-
-
-
+    return;
   }
 
 
+  if (!cart.length) {
 
-  const values =
+    alert(
+      "Your cart is empty."
+    );
 
-
-
-    sheet
-
-
-
-      .getRange(
-
-
-
-        2,
-
-
-
-        1,
-
-
-
-        lastRow - 1,
-
-
-
-        10
-
-
-
-      )
-
-
-
-      .getValues();
-
-
-
-  for (
-
-
-
-    let i = 0;
-
-
-
-    i < values.length;
-
-
-
-    i++
-
-
-
-  ) {
-
-
-
-    if (
-
-
-
-      String(
-
-
-
-        values[i][0]
-
-
-
-      ).trim() ===
-
-
-
-      orderId
-
-
-
-    ) {
-
-
-
-      return {
-
-
-
-        row:
-
-
-
-          i + 2,
-
-
-
-        orderId:
-
-
-
-          orderId,
-
-
-
-        total:
-
-
-
-          Number(
-
-
-
-            values[i][8]
-
-
-
-          ) || 0,
-
-
-
-        status:
-
-
-
-          String(
-
-
-
-            values[i][9] || ""
-
-
-
-          ).trim()
-
-
-
-      };
-
-
-
-    }
-
-
-
+    return;
   }
 
 
-
-  return null;
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// GET
-
-
-
-// ============================================================
-
-
-
-function doGet(e) {
-
-
-
-  try {
-
-
-
-    const action =
-
-
-
-      String(
-
-
-
-        e.parameter.action || ""
-
-
-
-      )
-
-
-
-        .trim()
-
-
-
-        .toLowerCase();
-
-
-
-    if (
-
-
-
-      action ===
-
-
-
-      "products"
-
-
-
-    ) {
-
-
-
-      return createCatalogueResponse();
-
-
-
-    }
-
-
-
-    const orderId =
-
-
-
-      String(
-
-
-
-        e.parameter.order || ""
-
-
-
-      ).trim();
-
-
-
-    if (!orderId) {
-
-
-
-      return createCheckoutErrorPage(
-
-
-
-        "Invalid payment link."
-
-
-
-      );
-
-
-
-    }
-
-
-
-    const order =
-
-
-
-      findOrderById(
-
-
-
-        orderId
-
-
-
-      );
-
-
-
-    if (!order) {
-
-
-
-      return createCheckoutErrorPage(
-
-
-
-        "Order not found."
-
-
-
-      );
-
-
-
-    }
-
-
-
-    if (
-
-
-
-      order.status
-
-
-
-        .toLowerCase() ===
-
-
-
-      "cancelled"
-
-
-
-    ) {
-
-
-
-      return createCheckoutErrorPage(
-
-
-
-        "This order has been cancelled. Payment is no longer available."
-
-
-
-      );
-
-
-
-    }
-
-
-
-    return createPaymentPage(
-
-
-
-      order
-
-
-
+  const name =
+    getInputValue(
+      "customer-name"
     );
 
-
-
-  } catch (error) {
-
-
-
-    return createCheckoutErrorPage(
-
-
-
-      "Unable to open the requested page."
-
-
-
-    );
-
-
-
-  }
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// PAYMENT PAGE
-
-
-
-// ============================================================
-
-
-
-function createPaymentPage(
-
-
-
-  order
-
-
-
-) {
-
-
-
-  const amount =
-
-
-
-    Number(
-
-
-
-      order.total
-
-
-
-    ).toFixed(2);
-
-
-
-  const upiURL =
-
-
-
-    "upi://pay" +
-
-
-
-    "?pa=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      UPI_ID
-
-
-
-    ) +
-
-
-
-    "&pn=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      BUSINESS_NAME
-
-
-
-    ) +
-
-
-
-    "&am=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      amount
-
-
-
-    ) +
-
-
-
-    "&cu=INR" +
-
-
-
-    "&tn=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      "Festive Cart Order " +
-
-
-
-      order.orderId
-
-
-
-    );
-
-
-
-  const qrURL =
-
-
-
-    "https://quickchart.io/qr" +
-
-
-
-    "?size=280" +
-
-
-
-    "&text=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      upiURL
-
-
-
-    );
-
-
-
-  const html = `
-
-
-
-<!DOCTYPE html>
-
-
-
-<html>
-
-
-
-<head>
-
-
-
-<meta
-
-
-
-  name="viewport"
-
-
-
-  content="width=device-width, initial-scale=1"
-
-
-
->
-
-
-
-<title>
-
-
-
-Festive Cart Payment
-
-
-
-</title>
-
-
-
-<style>
-
-
-
-* {
-
-
-
-  box-sizing: border-box;
-
-
-
-}
-
-
-
-body {
-
-
-
-  margin: 0;
-
-
-
-  padding: 20px 15px;
-
-
-
-  background: #f5f5f5;
-
-
-
-  font-family:
-
-
-
-    Arial,
-
-
-
-    Helvetica,
-
-
-
-    sans-serif;
-
-
-
-  text-align: center;
-
-
-
-  color: #222;
-
-
-
-}
-
-
-
-.box {
-
-
-
-  width: 100%;
-
-
-
-  max-width: 450px;
-
-
-
-  margin: 10px auto;
-
-
-
-  padding: 28px 22px;
-
-
-
-  background: #ffffff;
-
-
-
-  border-radius: 18px;
-
-
-
-  box-shadow:
-
-
-
-    0 4px 20px
-
-
-
-    rgba(0,0,0,.10);
-
-
-
-}
-
-
-
-h1 {
-
-
-
-  color: #c62828;
-
-
-
-}
-
-
-
-.amount {
-
-
-
-  margin:
-
-
-
-    15px 0 22px;
-
-
-
-  font-size: 38px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-.pay {
-
-
-
-  display: block;
-
-
-
-  width: 100%;
-
-
-
-  padding: 16px;
-
-
-
-  background: #1677ff;
-
-
-
-  color: #ffffff;
-
-
-
-  text-decoration: none;
-
-
-
-  border-radius: 10px;
-
-
-
-  font-size: 17px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-.qr {
-
-
-
-  width: 240px;
-
-
-
-  max-width: 100%;
-
-
-
-  height: auto;
-
-
-
-  margin-top: 25px;
-
-
-
-}
-
-
-
-.help {
-
-
-
-  margin-top: 15px;
-
-
-
-  padding: 13px;
-
-
-
-  background: #f5f5f5;
-
-
-
-  border-radius: 9px;
-
-
-
-  color: #555;
-
-
-
-  font-size: 14px;
-
-
-
-  line-height: 1.5;
-
-
-
-}
-
-
-
-.upi {
-
-
-
-  margin-top: 25px;
-
-
-
-  padding: 15px;
-
-
-
-  background: #f5f5f5;
-
-
-
-  border-radius: 9px;
-
-
-
-  font-weight: bold;
-
-
-
-}
-
-
-
-.copy-button {
-
-
-
-  margin-top: 12px;
-
-
-
-  padding: 10px 16px;
-
-
-
-  cursor: pointer;
-
-
-
-}
-
-
-
-</style>
-
-
-
-</head>
-
-
-
-<body>
-
-
-
-<div class="box">
-
-
-
-<h1>
-
-
-
-FESTIVE CART
-
-
-
-</h1>
-
-
-
-<p>
-
-
-
-Order ID
-
-
-
-</p>
-
-
-
-<strong>
-
-
-
-${escapeHtml(order.orderId)}
-
-
-
-</strong>
-
-
-
-<div class="amount">
-
-
-
-₹${escapeHtml(amount)}
-
-
-
-</div>
-
-
-
-<a
-
-
-
-  class="pay"
-
-
-
-  href="${escapeHtml(upiURL)}"
-
-
-
->
-
-
-
-PAY ₹${escapeHtml(amount)} WITH UPI
-
-
-
-</a>
-
-
-
-<div class="help">
-
-
-
-<strong>
-
-
-
-Android
-
-
-
-</strong>
-
-
-
-<br><br>
-
-
-
-Tap the blue button above to open a compatible UPI app.
-
-
-
-</div>
-
-
-
-<img
-
-
-
-  class="qr"
-
-
-
-  src="${escapeHtml(qrURL)}"
-
-
-
-  alt="UPI Payment QR Code"
-
-
-
->
-
-
-
-<div class="help">
-
-
-
-<strong>
-
-
-
-iPhone
-
-
-
-</strong>
-
-
-
-<br><br>
-
-
-
-Press and hold the QR code,
-
-
-
-then choose an available UPI payment app.
-
-
-
-</div>
-
-
-
-<div class="upi">
-
-
-
-UPI ID
-
-
-
-<br><br>
-
-
-
-<span id="upi">
-
-
-
-${escapeHtml(UPI_ID)}
-
-
-
-</span>
-
-
-
-<br>
-
-
-
-<button
-
-
-
-  class="copy-button"
-
-
-
-  onclick="copyUPI()"
-
-
-
->
-
-
-
-COPY UPI ID
-
-
-
-</button>
-
-
-
-</div>
-
-
-
-<div class="help">
-
-
-
-Payment is confirmed by Festive Cart
-
-
-
-after manual verification.
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-<script>
-
-
-
-function copyUPI() {
-
-
-
-  var value =
-
-
-
-    document
-
-
-
-      .getElementById("upi")
-
-
-
-      .innerText
-
-
-
-      .trim();
-
-
-
-  if (
-
-
-
-    navigator.clipboard &&
-
-
-
-    navigator.clipboard.writeText
-
-
-
-  ) {
-
-
-
-    navigator.clipboard
-
-
-
-      .writeText(value)
-
-
-
-      .then(function () {
-
-
-
-        alert(
-
-
-
-          "UPI ID copied"
-
-
-
-        );
-
-
-
-      });
-
-
-
-  } else {
-
-
-
-    prompt(
-
-
-
-      "Copy UPI ID:",
-
-
-
-      value
-
-
-
-    );
-
-
-
-  }
-
-
-
-}
-
-
-
-</script>
-
-
-
-</body>
-
-
-
-</html>
-
-
-
-  `;
-
-
-
-  return HtmlService
-
-
-
-    .createHtmlOutput(
-
-
-
-      html
-
-
-
+  const mobile =
+    getInputValue(
+      "customer-mobile"
     )
-
-
-
-    .setTitle(
-
-
-
-      "Festive Cart Payment"
-
-
-
-    );
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// ORDER STATUS EDIT TRIGGER
-
-
-
-// ============================================================
-
-
-
-function updateOrderOnEdit(e) {
-
-
-
-  try {
-
-
-
-    if (
-
-
-
-      !e ||
-
-
-
-      !e.range
-
-
-
-    ) {
-
-
-
-      return;
-
-
-
-    }
-
-
-
-    const sheet =
-
-
-
-      e.range.getSheet();
-
-
-
-    if (
-
-
-
-      sheet.getName() !==
-
-
-
-        SHEET_NAME ||
-
-
-
-      sheet
-
-
-
-        .getParent()
-
-
-
-        .getId() !==
-
-
-
-        SPREADSHEET_ID
-
-
-
-    ) {
-
-
-
-      return;
-
-
-
-    }
-
-
-
-    const row =
-
-
-
-      e.range.getRow();
-
-
-
-    const column =
-
-
-
-      e.range.getColumn();
-
-
-
-    if (
-
-
-
-      row < 2
-
-
-
-    ) {
-
-
-
-      return;
-
-
-
-    }
-
-
-
-    // J = Order Status
-
-
-
-    if (
-
-
-
-      column === 10
-
-
-
-    ) {
-
-
-
-      recalculateInventory();
-
-
-
-      createWhatsAppSendLink(
-
-
-
-        sheet,
-
-
-
-        row
-
-
-
-      );
-
-
-
-      return;
-
-
-
-    }
-
-
-
-    // K = Tracking ID
-
-
-
-    if (
-
-
-
-      column === 11
-
-
-
-    ) {
-
-
-
-      createWhatsAppSendLink(
-
-
-
-        sheet,
-
-
-
-        row
-
-
-
-      );
-
-
-
-      return;
-
-
-
-    }
-
-
-
-  } catch (error) {
-
-
-
-    console.log(
-
-
-
-      error
-
-
-
-    );
-
-
-
-  }
-
-
-
-}
-
-
-
-// ============================================================
-
-
-
-// OWNER -> CUSTOMER WHATSAPP SEND LINK
-
-
-
-// ============================================================
-
-
-
-function createWhatsAppSendLink(
-
-
-
-  sheet,
-
-
-
-  row
-
-
-
-) {
-
-
-
-  const orderId =
-
-
-
-    String(
-
-
-
-      sheet
-
-
-
-        .getRange(
-
-
-
-          row,
-
-
-
-          1
-
-
-
-        )
-
-
-
-        .getValue()
-
-
-
-    ).trim();
-
-
-
-  const customerName =
-
-
-
-    String(
-
-
-
-      sheet
-
-
-
-        .getRange(
-
-
-
-          row,
-
-
-
-          3
-
-
-
-        )
-
-
-
-        .getValue()
-
-
-
-    ).trim();
-
-
-
-  let mobile =
-
-
-
-    String(
-
-
-
-      sheet
-
-
-
-        .getRange(
-
-
-
-          row,
-
-
-
-          4
-
-
-
-        )
-
-
-
-        .getDisplayValue()
-
-
-
-    )
-
-
-
       .replace(
-
-
-
         /\D/g,
-
-
-
         ""
-
-
-
       );
 
-
-
-  const total =
-
-
-
-    Number(
-
-
-
-      sheet
-
-
-
-        .getRange(
-
-
-
-          row,
-
-
-
-          9
-
-
-
-        )
-
-
-
-        .getValue()
-
-
-
+  const address =
+    getInputValue(
+      "customer-address"
     );
 
-  const productsText =
-    String(
-      sheet
-        .getRange(
-          row,
-          8
-        )
-        .getDisplayValue()
+  const city =
+    getInputValue(
+      "customer-city"
     );
 
-  let subtotal =
-    total;
-
-  let shipping =
-    0;
-
-  const subtotalMatch =
-    productsText.match(
-      /Product Subtotal = ₹([0-9,.]+)/
-    );
-
-  const shippingMatch =
-    productsText.match(
-      /Shipping & Packing = ₹([0-9,.]+)/
-    );
-
-  if (subtotalMatch) {
-    subtotal =
-      Number(
-        subtotalMatch[1].replace(/,/g, "")
-      ) || total;
-  }
-
-  if (shippingMatch) {
-    shipping =
-      Number(
-        shippingMatch[1].replace(/,/g, "")
-      ) || 0;
-  }
-
-
-
-  const status =
-
-
-
-    String(
-
-
-
-      sheet
-
-
-
-        .getRange(
-
-
-
-          row,
-
-
-
-          10
-
-
-
-        )
-
-
-
-        .getDisplayValue()
-
-
-
-    ).trim();
-
-
-
-  const trackingId =
-
-
-
-    String(
-
-
-
-      sheet
-
-
-
-        .getRange(
-
-
-
-          row,
-
-
-
-          11
-
-
-
-        )
-
-
-
-        .getDisplayValue()
-
-
-
-    ).trim();
-
-
-
-  const sendCell =
-
-
-
-    sheet
-
-
-
-      .getRange(
-
-
-
-        row,
-
-
-
-        13
-
-
-
-      );
-
-
-
-  if (!status) {
-
-
-
-    sendCell.clearContent();
-
-
-
-    return;
-
-
-
-  }
-
-
-
-  if (
-
-
-
-    status
-
-
-
-      .toLowerCase() ===
-
-
-
-      "items are dispatched" &&
-
-
-
-    !trackingId
-
-
-
-  ) {
-
-
-
-    sendCell.setValue(
-
-
-
-      "ENTER TRACKING ID"
-
-
-
-    );
-
-
-
-    return;
-
-
-
-  }
-
-
-
-  if (
-
-
-
-    mobile.length === 10
-
-
-
-  ) {
-
-
-
-    mobile =
-
-
-
-      "91" +
-
-
-
-      mobile;
-
-
-
-  }
-
-
-
-  if (
-
-
-
-    mobile.length < 10
-
-
-
-  ) {
-
-
-
-    sendCell.clearContent();
-
-
-
-    return;
-
-
-
-  }
-
-
-
-  const paymentURL =
-
-
-
-    WEB_APP_URL +
-
-
-
-    "?order=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      orderId
-
-
-
-    );
-
-
-
-  let message =
-
-
-
-    "FESTIVE CART\n\n";
-
-
-
-  message +=
-
-
-
-    "Hello " +
-
-
-
-    customerName +
-
-
-
-    ",\n\n";
-
-
-
-  message +=
-
-
-
-    "Order ID: " +
-
-
-
-    orderId +
-
-
-
-    "\n";
-
-
-
-  message +=
-    "Product Subtotal: ₹" +
-    subtotal.toFixed(2) +
-    "\n";
-
-  message +=
-    "Shipping & Packing: ₹" +
-    shipping.toFixed(2) +
-    "\n";
-
-  message +=
-    "Total Amount: ₹" +
-    total.toFixed(2) +
-    "\n\n";
-
-
-
-  switch (
-
-
-
-    status.toLowerCase()
-
-
-
-  ) {
-
-
-
-    case "order received":
-
-
-
-      message +=
-
-
-
-        "Your order has been received and confirmed.\n\n";
-
-
-
-      message +=
-
-
-
-        "Please pay ₹" +
-
-
-
-        total.toFixed(2) +
-
-
-
-        " using the payment link below:\n\n";
-
-
-
-      message +=
-
-
-
-        paymentURL;
-
-
-
-      break;
-
-
-
-    case "payment received":
-
-
-
-      message +=
-
-
-
-        "Your payment has been received successfully.\n\n";
-
-
-
-      message +=
-
-
-
-        "Thank you. We will now process your order.";
-
-
-
-      break;
-
-
-
-    case "items are packed":
-
-
-
-      message +=
-
-
-
-        "Your items have been packed successfully.\n\n";
-
-
-
-      message +=
-
-
-
-        "Your order is ready for dispatch.";
-
-
-
-      break;
-
-
-
-    case "items are dispatched":
-
-
-
-      message +=
-
-
-
-        "Your order has been dispatched.\n\n";
-
-
-
-      message +=
-
-
-
-        "Tracking ID: " +
-
-
-
-        trackingId;
-
-
-
-      break;
-
-
-
-    case "cancelled":
-
-
-
-      message +=
-
-
-
-        "Your order has been cancelled.\n\n";
-
-
-
-      message +=
-
-
-
-        "Please contact Festive Cart if you require assistance.";
-
-
-
-      break;
-
-
-
-    default:
-
-
-
-      message +=
-
-
-
-        "Order Status: " +
-
-
-
-        status;
-
-
-
-  }
-
-
-
-  message +=
-
-
-
-    "\n\nThank you for shopping with Festive Cart!";
-
-
-
-  // Use api.whatsapp.com for the Sheet SEND link too.
-
-
-
-  const whatsappURL =
-
-
-
-    "https://api.whatsapp.com/send" +
-
-
-
-    "?phone=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      mobile
-
-
-
-    ) +
-
-
-
-    "&text=" +
-
-
-
-    encodeURIComponent(
-
-
-
-      message
-
-
-
-    );
-
-
-
-  const formula =
-
-
-
-    '=HYPERLINK("' +
-
-
-
-    whatsappURL
-
-
-
+  const pincode =
+    getInputValue(
+      "customer-pincode"
+    )
       .replace(
+        /\D/g,
+        ""
+      );
 
 
+  if (!name) {
 
-        /"/g,
+    alert(
+      "Please enter your name."
+    );
 
-
-
-        '""'
-
-
-
-      ) +
+    return;
+  }
 
 
+  if (
+    mobile.length !== 10
+  ) {
 
-    '","SEND")';
+    alert(
+      "Please enter a valid 10-digit mobile number."
+    );
+
+    return;
+  }
 
 
+  if (!address) {
 
-  sendCell.setFormula(
+    alert(
+      "Please enter your delivery address."
+    );
+
+    return;
+  }
 
 
+  if (!city) {
 
-    formula
+    alert(
+      "Please enter your city."
+    );
+
+    return;
+  }
 
 
+  if (
+    pincode.length !== 6
+  ) {
 
+    alert(
+      "Please enter a valid 6-digit pincode."
+    );
+
+    return;
+  }
+
+
+  const productData =
+    cart
+      .map(
+        function (item) {
+
+          return (
+            item.productNo +
+            ":" +
+            item.quantity
+          );
+
+        }
+      )
+      .join("|");
+
+
+  const submissionId =
+    createSubmissionId();
+
+
+  const orderData = {
+
+    submissionId:
+      submissionId,
+
+    name:
+      name,
+
+    mobile:
+      mobile,
+
+    address:
+      address,
+
+    city:
+      city,
+
+    pincode:
+      pincode,
+
+    productData:
+      productData
+
+  };
+
+
+  submitOrderToServer(
+    orderData
   );
-
-
-
 }
 
 
-
+// ============================================================
+// SUBMIT ORDER
 // ============================================================
 
+function submitOrderToServer(
+  orderData
+) {
+
+  orderSubmissionInProgress =
+    true;
 
 
-// MANUAL INVENTORY REBUILD
+  const button =
+    document.getElementById(
+      "place-order-button"
+    );
 
+  const message =
+    document.getElementById(
+      "order-message"
+    );
+
+
+  if (button) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Placing Order...";
+
+  }
+
+
+  if (message) {
+
+    message.textContent =
+      "Please wait while your order is being recorded.";
+
+  }
+
+
+  const form =
+    document.createElement(
+      "form"
+    );
+
+  form.method =
+    "POST";
+
+  form.action =
+    googleScriptURL +
+    "?action=placeOrder";
+
+  form.target =
+    "_blank";
+
+  form.style.display =
+    "none";
+
+
+  const actionInput =
+    document.createElement(
+      "input"
+    );
+
+  actionInput.type =
+    "hidden";
+
+  actionInput.name =
+    "action";
+
+  actionInput.value =
+    "placeOrder";
+
+
+  const dataInput =
+    document.createElement(
+      "input"
+    );
+
+  dataInput.type =
+    "hidden";
+
+  dataInput.name =
+    "orderData";
+
+  dataInput.value =
+    JSON.stringify(
+      orderData
+    );
+
+
+  form.appendChild(
+    actionInput
+  );
+
+  form.appendChild(
+    dataInput
+  );
+
+
+  document.body.appendChild(
+    form
+  );
+
+
+  form.submit();
+
+
+  setTimeout(
+    function () {
+
+      form.remove();
+
+      orderSubmissionInProgress =
+        false;
+
+
+      if (button) {
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          "Place Order";
+
+      }
+
+
+      if (message) {
+
+        message.textContent =
+          "The order page has been opened. Please complete the WhatsApp step there.";
+
+      }
+
+    },
+    2500
+  );
+}
 
 
 // ============================================================
+// SUBMISSION ID
+// ============================================================
+
+function createSubmissionId() {
+
+  return (
+    Date.now().toString(36) +
+    "-" +
+    Math.random()
+      .toString(36)
+      .substring(2, 10)
+  );
+}
 
 
+// ============================================================
+// INPUT HELPER
+// ============================================================
 
-function rebuildInventory() {
+function getInputValue(id) {
+
+  const element =
+    document.getElementById(
+      id
+    );
 
 
+  if (!element) {
 
-  recalculateInventory();
+    return "";
+
+  }
 
 
+  return String(
+    element.value || ""
+  ).trim();
+}
 
+
+// ============================================================
+// CURRENCY
+// ============================================================
+
+function formatCurrency(value) {
+
+  return (
+    "₹" +
+    Number(value || 0)
+      .toLocaleString(
+        "en-IN",
+        {
+          maximumFractionDigits:
+            2
+        }
+      )
+  );
+}
+
+
+// ============================================================
+// CATEGORY MENU
+// ============================================================
+
+function openCategoryMenu() {
+
+  const menu =
+    document.getElementById(
+      "category-menu"
+    );
+
+  const overlay =
+    document.getElementById(
+      "category-overlay"
+    );
+
+
+  if (menu) {
+    menu.classList.add(
+      "open"
+    );
+  }
+
+
+  if (overlay) {
+    overlay.classList.add(
+      "show"
+    );
+  }
+}
+
+
+function closeCategoryMenu() {
+
+  const menu =
+    document.getElementById(
+      "category-menu"
+    );
+
+  const overlay =
+    document.getElementById(
+      "category-overlay"
+    );
+
+
+  if (menu) {
+    menu.classList.remove(
+      "open"
+    );
+  }
+
+
+  if (overlay) {
+    overlay.classList.remove(
+      "show"
+    );
+  }
+}
+
+
+// ============================================================
+// CUSTOMER MENU
+// ============================================================
+
+function openCustomerMenu() {
+
+  const menu =
+    document.getElementById(
+      "customer-menu"
+    );
+
+  const overlay =
+    document.getElementById(
+      "customer-overlay"
+    );
+
+
+  if (menu) {
+    menu.classList.add(
+      "open"
+    );
+  }
+
+
+  if (overlay) {
+    overlay.classList.add(
+      "show"
+    );
+  }
+}
+
+
+function closeCustomerMenu() {
+
+  const menu =
+    document.getElementById(
+      "customer-menu"
+    );
+
+  const overlay =
+    document.getElementById(
+      "customer-overlay"
+    );
+
+
+  if (menu) {
+    menu.classList.remove(
+      "open"
+    );
+  }
+
+
+  if (overlay) {
+    overlay.classList.remove(
+      "show"
+    );
+  }
+}
+
+
+// ============================================================
+// WHATSAPP
+// ============================================================
+
+function openBusinessWhatsApp() {
+
+  const message =
+    encodeURIComponent(
+      "Hello Festive Cart"
+    );
+
+
+  window.open(
+    "https://wa.me/" +
+      businessWhatsApp +
+      "?text=" +
+      message,
+    "_blank"
+  );
+}
+
+
+// ============================================================
+// INSTAGRAM
+// ============================================================
+
+function openInstagram() {
+
+  if (!instagramURL) {
+
+    alert(
+      "Instagram link will be added soon."
+    );
+
+    return;
+  }
+
+
+  window.open(
+    instagramURL,
+    "_blank"
+  );
 }
