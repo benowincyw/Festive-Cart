@@ -1722,6 +1722,129 @@ function updateCart() {
   );
 
 
+  // ----------------------------------------------------------
+  // CART PRICE BREAKDOWN
+  // ----------------------------------------------------------
+
+  const priceBreakdown =
+    document.createElement(
+      "div"
+    );
+
+  priceBreakdown.className =
+    "cart-price-breakdown";
+
+  priceBreakdown.style.marginTop =
+    "16px";
+
+  priceBreakdown.style.padding =
+    "14px";
+
+  priceBreakdown.style.borderTop =
+    "1px solid #dddddd";
+
+  priceBreakdown.style.background =
+    "#f8f8f8";
+
+  priceBreakdown.style.borderRadius =
+    "10px";
+
+
+  function addCartPriceRow(
+    label,
+    value,
+    isTotal
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.style.display =
+      "flex";
+
+    row.style.justifyContent =
+      "space-between";
+
+    row.style.alignItems =
+      "center";
+
+    row.style.gap =
+      "12px";
+
+    row.style.padding =
+      isTotal
+        ? "10px 0 0"
+        : "5px 0";
+
+    if (isTotal) {
+      row.style.marginTop =
+        "6px";
+
+      row.style.borderTop =
+        "1px solid #cccccc";
+
+      row.style.fontSize =
+        "18px";
+
+      row.style.fontWeight =
+        "700";
+    }
+
+    const labelBox =
+      document.createElement(
+        "span"
+      );
+
+    labelBox.textContent =
+      label;
+
+    const valueBox =
+      document.createElement(
+        "strong"
+      );
+
+    valueBox.textContent =
+      formatCurrency(value);
+
+    row.appendChild(
+      labelBox
+    );
+
+    row.appendChild(
+      valueBox
+    );
+
+    priceBreakdown.appendChild(
+      row
+    );
+  }
+
+
+  addCartPriceRow(
+    "Product Subtotal",
+    subtotal,
+    false
+  );
+
+  addCartPriceRow(
+    "Shipping & Packing",
+    shipping,
+    false
+  );
+
+  addCartPriceRow(
+    "Total",
+    total,
+    true
+  );
+
+  itemsBox.appendChild(
+    priceBreakdown
+  );
+
+
   updateCheckoutSummary();
 
 
