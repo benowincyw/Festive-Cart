@@ -2620,3 +2620,20 @@ function openInstagram() {
     "_blank"
   );
 }
+
+// ============================================================
+// WELCOME / IMPORTANT CUSTOMER NOTICE
+// ============================================================
+
+function closeWelcomePopup() {
+  const overlay =
+    document.getElementById(
+      "welcome-popup-overlay"
+    );
+
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+}
+
+
