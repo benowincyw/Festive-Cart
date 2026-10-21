@@ -22,6 +22,91 @@
 
 <body>
 
+  <!-- ======================================================
+       WELCOME / IMPORTANT CUSTOMER NOTICE
+       Remains visible until manually closed
+       ====================================================== -->
+  <div
+    id="welcome-popup-overlay"
+    class="welcome-popup-overlay"
+    role="presentation"
+  >
+    <section
+      class="welcome-popup"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="welcome-popup-title"
+    >
+      <button
+        class="welcome-popup-close"
+        type="button"
+        onclick="closeWelcomePopup()"
+        aria-label="Close welcome message"
+      >
+        ×
+      </button>
+
+      <img
+        class="welcome-popup-decoration"
+        src="welcome-holly.png"
+        alt=""
+        aria-hidden="true"
+      >
+
+      <h2 id="welcome-popup-title">
+        Welcome to Festive Cart!
+      </h2>
+
+      <p class="welcome-thanks">
+        Thank you for visiting us! ❤️
+      </p>
+
+      <p>
+        We bring you
+        <strong>
+          carefully selected, limited-stock Christmas collections at affordable prices.
+        </strong>
+      </p>
+
+      <div class="welcome-popup-note">
+        <strong class="welcome-note-title">
+          ✨ Please Note
+        </strong>
+
+        <ul>
+          <li>
+            Our premium products require
+            <strong>safe &amp; secure packing</strong>.
+          </li>
+          <li>
+            <strong>Packing charges are additional</strong>
+            and are not included in the displayed product price.
+          </li>
+          <li>
+            <strong>Shipping charges will be calculated at checkout</strong>
+            and are to be borne by the customer.
+          </li>
+        </ul>
+      </div>
+
+      <p class="welcome-limited">
+        <strong>
+          Shop early — limited stocks available! 🎁
+        </strong>
+      </p>
+
+      <button
+        class="welcome-start-button"
+        type="button"
+        onclick="closeWelcomePopup()"
+      >
+        START SHOPPING
+      </button>
+    </section>
+  </div>
+
+
+
 
   <!-- ======================================================
        CHRISTMAS SNOWFALL
