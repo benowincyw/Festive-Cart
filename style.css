@@ -1,160 +1,95 @@
-
-  .welcome-popup p,
-  .welcome-popup li {
-    font-size: 12.5px;
-  }
-}
-
 /* ============================================================
-   FESTIVE CART - DESKTOP / LAPTOP LAYOUT
-   Mobile layout remains unchanged
+   FESTIVE CART - COMPLETE STYLE.CSS
+   CHRISTMAS BACKGROUND + PRODUCT SLIDER + SNOWFALL
    ============================================================ */
 
-@media (min-width: 769px) {
-  .top-header {
-    max-width: none;
-    width: 100%;
-    padding-left: 28px;
-    padding-right: 28px;
-  }
 
-  .top-header .header-menu-button:first-child {
-    visibility: hidden;
-    pointer-events: none;
-  }
+/* ============================================================
+   GLOBAL
+   ============================================================ */
 
-  .page-container {
-    width: calc(100% - 270px);
-    max-width: 1500px;
-    min-height: 100vh;
-    margin-left: 270px;
-    margin-right: 0;
-    padding: 24px 28px 45px;
-  }
-
-  #category-overlay {
-    display: none !important;
-  }
-
-  #category-menu {
-    position: fixed;
-    top: 62px;
-    left: 0;
-    width: 250px;
-    height: calc(100vh - 62px);
-    z-index: 600;
-    transform: none !important;
-    overflow-y: auto;
-    padding-bottom: 90px;
-    background: #ffffff;
-    border-right: 1px solid #e5e5e5;
-    box-shadow: 3px 0 12px rgba(0, 0, 0, 0.06);
-  }
-
-  #category-menu .menu-header {
-    min-height: 58px;
-  }
-
-  #category-menu .menu-header h2 {
-    font-size: 18px;
-  }
-
-  #category-menu .menu-close-button {
-    display: none;
-  }
-
-  #category-menu .menu-list {
-    padding: 12px;
-  }
-
-  #category-menu .menu-item {
-    padding: 12px 14px;
-    margin-bottom: 5px;
-    font-size: 14px;
-  }
-
-  .intro-section {
-    padding: 8px 0 20px;
-  }
-
-  .intro-section h1 {
-    font-size: 30px;
-  }
-
-  .intro-section p {
-    max-width: 650px;
-  }
-
-  .products-section {
-    width: 100%;
-  }
-
-  .section-title {
-    font-size: 23px;
-    margin: 8px 0 18px;
-  }
-
-  #product-list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 22px;
-    align-items: start;
-  }
-
-  .product {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .product-image-container {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: #ffffff;
-  }
-
-  .product-image {
-    width: 100%;
-    height: 100%;
-    max-height: none;
-    object-fit: contain;
-  }
-
-  .product-info {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .product-name {
-    font-size: 18px;
-  }
-
-  .product-description {
-    font-size: 13px;
-  }
-
-  .product-action-row {
-    margin-top: auto;
-  }
+* {
+  box-sizing: border-box;
 }
 
-@media (min-width: 1400px) {
-  .page-container {
-    width: calc(100% - 280px);
-    max-width: none;
-    margin-left: 280px;
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-
-  #category-menu {
-    width: 260px;
-  }
-
-  #product-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+html {
+  scroll-behavior: smooth;
 }
+
+body {
+  margin: 0;
+  padding: 0 0 85px 0;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  background-color: #f7f7f7;
+  background-image: url("christmas-background.jpg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
+
+  color: #222;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* ============================================================
+   CHRISTMAS SNOWFALL
+   ============================================================ */
+
+.snowfall {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  z-index: 650;
+
+  pointer-events: none;
+
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+
+/* INDIVIDUAL SNOWFLAKE */
+
+.snowflake {
+  position: absolute;
+
+  top: -12vh;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.35),
+    0 0 8px rgba(255, 255, 255, 0.8);
+
+  opacity: 0.9;
+
+  line-height: 1;
+
+  pointer-events: none;
+
+  will-change: transform;
+
+  animation-name: festive-snowfall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
