@@ -1272,20 +1272,15 @@ function getCartTotal() {
 // SHIPPING & PACKING
 // ============================================================
 
+const SHIPPING_NOTICE = "Shipping charges payable after shipment.";
+
+// The order amount includes products only.
 function getShippingCharge(subtotal) {
-  subtotal = Number(subtotal) || 0;
-
-  if (subtotal <= 0) return 0;
-  if (subtotal < 500) return 79;
-  if (subtotal < 1000) return 99;
-  if (subtotal < 2000) return 129;
-
-  return 149;
+  return 0;
 }
 
 function getGrandTotal() {
-  const subtotal = getCartTotal();
-  return subtotal + getShippingCharge(subtotal);
+  return getCartTotal();
 }
 
 // ============================================================
@@ -1345,11 +1340,7 @@ function updateCart() {
   const subtotal =
     getCartTotal();
 
-  const shipping =
-    getShippingCharge(subtotal);
-
-  const total =
-    subtotal + shipping;
+  const total = subtotal;
 
 
   if (countBox) {
@@ -1452,7 +1443,12 @@ function updateCart() {
           );
 
         shippingAmount.textContent =
-          formatCurrency(shipping);
+          SHIPPING_NOTICE;
+        shippingAmount.style.fontWeight = "normal";
+        shippingAmount.style.fontSize = "12px";
+        shippingAmount.style.textAlign = "right";
+        shippingAmount.style.maxWidth = "58%";
+        shippingAmount.style.whiteSpace = "normal";
 
         shippingRow.appendChild(
           shippingLabel
@@ -1897,9 +1893,6 @@ function updateCheckoutSummary() {
       const subtotal =
         getCartTotal();
 
-      const shipping =
-        getShippingCharge(subtotal);
-
       const subtotalRow =
         document.createElement("div");
 
@@ -1946,7 +1939,12 @@ function updateCheckoutSummary() {
         document.createElement("strong");
 
       shippingValue.textContent =
-        formatCurrency(shipping);
+        SHIPPING_NOTICE;
+      shippingValue.style.fontWeight = "normal";
+      shippingValue.style.fontSize = "12px";
+      shippingValue.style.textAlign = "right";
+      shippingValue.style.maxWidth = "58%";
+      shippingValue.style.whiteSpace = "normal";
 
       shippingRow.appendChild(
         shippingLabel
@@ -2635,5 +2633,3 @@ function closeWelcomePopup() {
     overlay.style.display = "none";
   }
 }
-
-
